@@ -70,7 +70,7 @@ class AIWidgets {
     const userMsg = document.createElement('div');
     userMsg.className = 'chat-message user-message';
     userMsg.textContent = message;
-    messagesDiv?.appendChild(userMsg);
+    if (messagesDiv) messagesDiv.appendChild(userMsg);
     input.value = '';
 
     try {
@@ -83,13 +83,15 @@ class AIWidgets {
       const aiMsg = document.createElement('div');
       aiMsg.className = 'chat-message ai-message';
       aiMsg.textContent = response.response || response.reply || 'No response';
-      messagesDiv?.appendChild(aiMsg);
-      messagesDiv?.scrollTop = messagesDiv?.scrollHeight;
+      if (messagesDiv) {
+        messagesDiv.appendChild(aiMsg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }
     } catch (err) {
       const errMsg = document.createElement('div');
       errMsg.className = 'chat-message error-message';
       errMsg.textContent = 'Error: ' + err.message;
-      messagesDiv?.appendChild(errMsg);
+      if (messagesDiv) messagesDiv.appendChild(errMsg);
     }
   }
 
