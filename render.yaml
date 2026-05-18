@@ -20,5 +20,7 @@ services:
         fromSecret: GMAIL_APP_PASSWORD
       - key: JWT_SECRET
         fromSecret: JWT_SECRET
+      - key: NVIDIA_API_KEY
+        fromSecret: NVIDIA_API_KEY
       - key: FRONTEND_URL
         fromService: edupath-ai
