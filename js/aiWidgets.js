@@ -2,7 +2,7 @@
 // AI-Powered UI Components: Chat, Recommendations, Insights, Study Tools
 
 class AIWidgets {
-  constructor(apiBase = '/.netlify/functions/api') {
+  constructor(apiBase = '/api') {
     this.apiBase = apiBase;
     this.sessionId = this.getOrCreateSessionId();
   }
@@ -74,10 +74,9 @@ class AIWidgets {
     input.value = '';
 
     try {
-      const response = await this.apiCall('/students/ai-chat', 'POST', {
+      const response = await this.apiCall('/ai/tutor', 'POST', {
         sessionId: this.sessionId,
-        question: message,
-        messages: [{ role: 'user', content: message }]
+        question: message
       });
 
       // Show AI response
@@ -103,7 +102,7 @@ class AIWidgets {
 
     try {
       const recommendations = await this.apiCall('/ai/recommendations', 'POST', {
-        sessionId: this.studentId,
+        sessionId: this.sessionId,
         grades: studentData.grades,
         interests: studentData.interests,
         currentCourses: studentData.currentCourses,
