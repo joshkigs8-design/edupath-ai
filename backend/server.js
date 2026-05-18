@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
-const frontendPath = path.join(__dirname, '..', 'frontend');
+const frontendPath = path.join(__dirname, '..');
 
 app.use(helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false }));
 app.use(express.static(frontendPath));

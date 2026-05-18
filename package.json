@@ -3,12 +3,12 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "start":        "cd backend && npm start",
-    "dev":          "cd backend && npm run dev",
-    "backend":      "cd backend && npm start",
-    "backend:dev":  "cd backend && npm run dev",
-    "setup":        "cd backend && npm install && npx prisma db push && node prisma/seed.js",
-    "db:seed":      "cd backend && node prisma/seed.js",
-    "db:studio":    "cd backend && npx prisma studio"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "backend": "node backend/server.js",
+    "backend:dev": "nodemon backend/server.js",
+    "setup": "cd backend && npm install && npx prisma db push && node prisma/seed.js",
+    "db:seed": "node backend/prisma/seed.js",
+    "db:studio": "npx prisma studio"
   }
 }

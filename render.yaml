@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: edupath-ai
+    env: node
+    branch: main
+    buildCommand: npm install && npm run setup --if-present
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromSecret: DATABASE_URL
+      - key: PAYSTACK_SECRET_KEY
+        fromSecret: PAYSTACK_SECRET_KEY
+      - key: PAYSTACK_PUBLIC_KEY
+        fromSecret: PAYSTACK_PUBLIC_KEY
+      - key: GMAIL_USER
+        fromSecret: GMAIL_USER
+      - key: GMAIL_APP_PASSWORD
+        fromSecret: GMAIL_APP_PASSWORD
+      - key: JWT_SECRET
+        fromSecret: JWT_SECRET
+      - key: FRONTEND_URL
+        fromService: edupath-ai
