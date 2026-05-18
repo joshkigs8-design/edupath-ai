@@ -4621,7 +4621,7 @@ function initRipples() {
 
 
 // API
-var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3001/api' : '/.netlify/functions/api';
+var API_BASE = '/api';
 function apiGet(path) { return fetch(API_BASE + path).then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
 function apiPost(path, body) { return fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function(r) { return r.json(); }); }
 function loadCoursesFromAPI() { return apiGet('/courses').then(function(data) { if (data && data.courses && data.courses.length) { DB.length = 0; data.courses.forEach(function(c) { DB.push(c); }); var el = document.getElementById('statCourses'); if (el) el.textContent = DB.length + '+'; } }).catch(function(e) { console.warn('API unavailable:', e.message); }); }

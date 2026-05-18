@@ -471,8 +471,8 @@
   </main>
 
   <script>
-    // API Configuration - matches index_new.html pattern
-    var API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3001/api' : '/.netlify/functions/api';
+    // API Configuration
+    var API_BASE = '/api';
     var adminToken = localStorage.getItem('edupath_admin_token') || null;
     var adminEmail = localStorage.getItem('edupath_admin_email') || null;
 
