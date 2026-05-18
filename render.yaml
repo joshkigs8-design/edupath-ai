@@ -3,7 +3,7 @@ services:
     name: edupath-ai
     env: node
     branch: main
-    buildCommand: npm install && npm run setup --if-present
+    buildCommand: npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
