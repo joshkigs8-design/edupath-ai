@@ -201,34 +201,53 @@ router.post('/practice-questions', async (req, res) => {
 // AI Tutor - Answer student questions in context
 router.post('/tutor', async (req, res) => {
   try {
+    // Check NVIDIA API key
+    if (!process.env.NVIDIA_API_KEY) {
+      return res.status(500).json({ error: 'NVIDIA API key not configured on server' });
+    }
+
     const { sessionId, question, courseContext } = req.body;
     
     if (!sessionId || !question) {
       return res.status(400).json({ error: 'sessionId and question required' });
     }
 
-    // Get conversation history
-    const history = await prisma.aiMessage.findMany({
-      where: { sessionId },
-      orderBy: { createdAt: 'desc' },
-      take: 10
-    });
+    // Get conversation history if database is available
+    let history = [];
+    if (prisma) {
+      try {
+        const messages = await prisma.aiMessage.findMany({
+          where: { sessionId },
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        });
+        history = messages.reverse();
+      } catch (e) {
+        console.warn('Could not fetch history:', e.message);
+      }
+    }
 
-    const response = await aiService.tutorResponse(question, courseContext, history.reverse());
+    const response = await aiService.tutorResponse(question, courseContext, history);
 
-    // Save question and response
-    await prisma.aiMessage.create({
-      data: { sessionId, role: 'user', content: question }
-    });
+    // Save to database if available
+    if (prisma) {
+      try {
+        await prisma.aiMessage.create({
+          data: { sessionId, role: 'user', content: question }
+        });
 
-    await prisma.aiMessage.create({
-      data: { sessionId, role: 'assistant', content: response }
-    });
+        await prisma.aiMessage.create({
+          data: { sessionId, role: 'assistant', content: response }
+        });
 
-    await prisma.session.update({
-      where: { sessionId },
-      data: { aiQueries: { increment: 1 } }
-    });
+        await prisma.session.update({
+          where: { sessionId },
+          data: { aiQueries: { increment: 1 } }
+        });
+      } catch (e) {
+        console.warn('Could not save to database:', e.message);
+      }
+    }
 
     res.json({ response, generated_at: new Date() });
   } catch (err) {
