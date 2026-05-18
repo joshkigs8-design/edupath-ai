@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f0a1a">
+    <title>EduPath AI Features - Course Assistant & Recommendations</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --bg: #0f0a1a;
+            --bg-light: #1a1630;
+            --text: #eef2ff;
+            --text-muted: #9bb1d5;
+            --border: rgba(255,255,255,0.1);
+            --accent: #f97316;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 15px;
+        }
+
+        .section {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--text);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        .input-group {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-family: inherit;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .widget-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .demo-note {
+            background: rgba(249, 115, 22, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 EduPath AI Features</h1>
+            <p>Intelligent education platform powered by NVIDIA Llama 3.1</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- AI Chat Tutor -->
+        <div class="section">
+            <h2>💬 AI Study Tutor</h2>
+            <p>Get instant answers to your study questions with context-aware AI assistance.</p>
+            <div class="demo-note">
+                💡 The AI tutor maintains conversation history and provides personalized explanations based on course context.
+            </div>
+            <button class="btn btn-primary" onclick="initiateChatWidget()">Start Chat with AI Tutor</button>
+            <div class="widget-container" id="chatWidget"></div>
+        </div>
+
+        <!-- Course Recommendations -->
+        <div class="section">
+            <h2>🎯 Smart Course Recommendations</h2>
+            <p>AI-powered course suggestions based on your grades, interests, and career goals.</p>
+            
+            <div class="input-group">
+                <input type="text" id="recGrades" placeholder="Your grades (e.g., 70, 85, 92)" value="75,82,88">
+                <input type="text" id="recInterests" placeholder="Your interests (e.g., Tech, Business)" value="Technology, Data Science">
+            </div>
+            <div class="input-group">
+                <input type="text" id="recCareer" placeholder="Career goal (e.g., Software Engineer)" value="Software Engineer">
+                <button class="btn btn-primary" onclick="loadRecommendations()">Get Recommendations</button>
+            </div>
+            
+            <div class="widget-container" id="recommendationsWidget"></div>
+        </div>
+
+        <!-- Career Guidance -->
+        <div class="section">
+            <h2>🚀 Career Path Guidance</h2>
+            <p>AI-generated personalized career path planning and skill development recommendations.</p>
+            
+            <div class="input-group">
+                <input type="text" id="careerInterests" placeholder="Your interests" value="Innovation, Problem-solving">
+                <input type="text" id="careerStrengths" placeholder="Your strengths" value="Mathematics, Communication">
+            </div>
+            <div class="input-group">
+                <button class="btn btn-primary" onclick="loadCareerGuidance()">Get Career Guidance</button>
+            </div>
+            
+            <div class="widget-container" id="careerWidget"></div>
+        </div>
+
+        <!-- Progress Analysis -->
+        <div class="section">
+            <h2>📊 Student Progress Analysis</h2>
+            <p>AI insights about your learning journey, engagement patterns, and personalized improvement suggestions.</p>
+            <button class="btn btn-primary" onclick="loadProgressAnalysis()">Analyze My Progress</button>
+            <div class="widget-container" id="progressWidget"></div>
+        </div>
+
+        <!-- Course Summary -->
+        <div class="section">
+            <h2>📚 AI Course Summaries</h2>
+            <p>Quick AI-generated summaries of any course to understand its content and relevance.</p>
+            
+            <div class="input-group">
+                <select id="courseSelect">
+                    <option value="">Select a course...</option>
+                    <option value="1">CS101 - Introduction to Programming</option>
+                    <option value="2">MATH201 - Advanced Calculus</option>
+                    <option value="3">PHYS301 - Quantum Mechanics</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadCourseSummary()">Summarize Course</button>
+            </div>
+            
+            <div class="widget-container" id="summaryWidget"></div>
+        </div>
+
+        <!-- Practice Questions -->
+        <div class="section">
+            <h2>❓ AI-Generated Practice Questions</h2>
+            <p>Get unlimited AI-generated practice questions at different difficulty levels.</p>
+            
+            <div class="input-group">
+                <select id="difficultySelect">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadPracticeQuestions()">Generate Questions</button>
+            </div>
+            
+            <div class="widget-container" id="questionsWidget"></div>
+        </div>
+
+        <!-- Feature Overview -->
+        <div class="section">
+            <h2>✨ All AI Features</h2>
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎓</div>
+                    <h3>Smart Recommendations</h3>
+                    <p>Personalized course suggestions based on your profile and goals</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>AI Tutor</h3>
+                    <p>24/7 study support with conversational AI assistance</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Progress Tracking</h3>
+                    <p>AI-powered analysis of your learning journey</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Career Planning</h3>
+                    <p>Guided career path planning and skill development</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Course Summaries</h3>
+                    <p>Quick AI summaries of courses and content</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">❓</div>
+                    <h3>Practice Questions</h3>
+                    <p>AI-generated questions at multiple difficulty levels</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <h2>📊 Platform Statistics</h2>
+            <button class="btn btn-primary" onclick="loadStats()">Load Live Stats</button>
+            <div id="statsContainer" class="stats-grid" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 EduPath AI. Powered by NVIDIA Llama 3.1 | All features available to registered users</p>
+    </footer>
+
+    <!-- Include the AI Widgets Library -->
+    <script src="/js/aiWidgets.js"></script>
+    
+    <script>
+        const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+            ? 'http://localhost:3001/api' 
+            : '/.netlify/functions/api';
+
+        // Get or create session ID
+        function getSessionId() {
+            let sessionId = sessionStorage.getItem('edupath_sessionId');
+            if (!sessionId) {
+                sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('edupath_sessionId', sessionId);
+            }
+            return sessionId;
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            try {
+                const response = await fetch(API_BASE + endpoint, options);
+                if (!response.ok) throw new Error(`API error: ${response.status}`);
+                return await response.json();
+            } catch (err) {
+                console.error('API Error:', err);
+                throw err;
+            }
+        }
+
+        function initiateChatWidget() {
+            window.aiWidgets.createChatWidget('chatWidget');
+        }
+
+        async function loadRecommendations() {
+            const container = document.getElementById('recommendationsWidget');
+            container.innerHTML = '<div class="loading">Generating personalized recommendations...</div>';
+
+            try {
+                const grades = document.getElementById('recGrades').value;
+                const interests = document.getElementById('recInterests').value;
+                const careerGoal = document.getElementById('recCareer').value;
+
+                await window.aiWidgets.createRecommendationsCard('recommendationsWidget', {
+                    grades,
+                    interests,
+                    careerGoal,
+                    currentCourses: 'None'
+                });
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171;">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadCareerGuidance() {
+            const container = document.getElementById('careerWidget');
+            container.innerHTML = '<div class="loading">Generating your career path...</div>';
+
+            try {
+                await window.aiWidgets.createCareerGuidancePanel('careerWidget', {
+                    interests: document.getElementById('careerInterests').value,
+                    strengths: document.getElementById('careerStrengths').value,
+                    currentCourses: 'None',
+                    grades: 'Good',
+                    careerGoal: 'Professional'
+                });
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171;">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadProgressAnalysis() {
+            const container = document.getElementById('progressWidget');
+            container.innerHTML = '<div class="loading">Analyzing your progress...</div>';
+
+            try {
+                await window.aiWidgets.createProgressAnalysis('progressWidget');
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171;">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadCourseSummary() {
+            const container = document.getElementById('summaryWidget');
+            const courseId = document.getElementById('courseSelect').value;
+            
+            if (!courseId) {
+                container.innerHTML = '<p style="color: #9bb1d5;">Please select a course first</p>';
+                return;
+            }
+
+            container.innerHTML = '<div class="loading">Generating course summary...</div>';
+
+            try {
+                await window.aiWidgets.createCourseSummary('summaryWidget', courseId);
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171;">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadPracticeQuestions() {
+            const container = document.getElementById('questionsWidget');
+            const difficulty = document.getElementById('difficultySelect').value;
+            
+            container.innerHTML = '<div class="loading">Generating practice questions...</div>';
+
+            try {
+                await window.aiWidgets.createPracticeQuestions('questionsWidget', '1', difficulty);
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171;">Error: ' + err.message + '</p>';
+            }
+        }
+
+        async function loadStats() {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = '<div class="loading" style="grid-column: 1 / -1;">Loading platform statistics...</div>';
+
+            try {
+                const data = await apiCall('/ai/admin-insights');
+                
+                if (data.stats) {
+                    const stats = data.stats;
+                    container.innerHTML = `
+                        <div class="stat-box">
+                            <div class="stat-value">${stats.sessions}</div>
+                            <div class="stat-label">Active Sessions</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${stats.aiQueries}</div>
+                            <div class="stat-label">AI Queries</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${stats.courses}</div>
+                            <div class="stat-label">Available Courses</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${stats.paidUsers}</div>
+                            <div class="stat-label">Paid Users</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${stats.avgQueriesPerSession}</div>
+                            <div class="stat-label">Avg Queries/Session</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                container.innerHTML = '<p style="color: #f87171; grid-column: 1 / -1;">Error loading stats: ' + err.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
