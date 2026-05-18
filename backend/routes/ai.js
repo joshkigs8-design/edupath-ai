@@ -3,18 +3,32 @@
 // Available to all authenticated users
 
 const router = require('express').Router();
-const { PrismaClient } = require('@prisma/client');
+let prisma;
+try {
+  prisma = new (require('@prisma/client')).PrismaClient();
+} catch (e) {
+  console.error('Prisma not available:', e.message);
+}
 const aiService = require('../services/aiService');
-const prisma = new PrismaClient();
 
 // ── POST /api/ai/recommendations ─────────────────────────────────────────
 // Get personalized course recommendations based on student profile
 router.post('/recommendations', async (req, res) => {
   try {
+    // Check NVIDIA API key
+    if (!process.env.NVIDIA_API_KEY) {
+      return res.status(500).json({ error: 'NVIDIA API key not configured on server' });
+    }
+
     const { sessionId, grades, interests, currentCourses, careerGoal, limit } = req.body;
     
     if (!sessionId || !grades) {
       return res.status(400).json({ error: 'sessionId and grades required' });
+    }
+
+    // Check database availability
+    if (!prisma) {
+      return res.status(500).json({ error: 'Database not configured on server' });
     }
 
     // Fetch available courses

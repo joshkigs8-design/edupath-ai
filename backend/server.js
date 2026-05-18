@@ -14,12 +14,14 @@ app.use(helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false 
 app.use(express.static(frontendPath));
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5500',
-  'http://127.0.0.1:5500', 'null',
-];
+  process.env.FRONTEND_URL,
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'null',
+].filter(Boolean);
 app.use(cors({
   origin: function(origin, cb) {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    if (!origin || allowedOrigins.includes(origin) || origin.includes('onrender.com') || origin.includes('github.io')) return cb(null, true);
     cb(new Error('CORS blocked: ' + origin));
   },
   credentials: true,
@@ -33,7 +35,7 @@ app.use(rateLimit({ windowMs: 15*60*1000, max: 500, standardHeaders: true, legac
 const payLimit = rateLimit({ windowMs: 15*60*1000, max: 20 });
 
 app.get('/health', function(req, res) {
-  res.json({ status: 'ok', version: '2.0.0', paystack: !!process.env.PAYSTACK_SECRET_KEY });
+  res.json({ status: 'ok', version: '2.0.0', paystack: !!process.env.PAYSTACK_SECRET_KEY, nvidia: !!process.env.NVIDIA_API_KEY });
 });
 
 app.use('/api/courses',  require('./routes/courses'));
@@ -50,7 +52,7 @@ app.get('*', (req, res, next) => {
 
 app.use(function(req, res) { res.status(404).json({ error: 'Not found: ' + req.method + ' ' + req.path }); });
 app.use(function(err, req, res, _next) {
-  if (process.env.NODE_ENV !== 'production') console.error(err);
+  console.error(err);
   res.status(err.status || 500).json({ error: err.message || 'Server error' });
 });
 
