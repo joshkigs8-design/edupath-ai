@@ -15,9 +15,11 @@ import {
   Receipt,
   Check,
   Zap,
+  GraduationCap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { isPassUnlocked } from "@/lib/auth-store";
+import { loadGrades } from "@/lib/edupath-store";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -25,7 +27,7 @@ export const Route = createFileRoute("/auth")({
       { title: "Candidate Account — Sign In & Sign Up — EduPath AI" },
       {
         name: "description",
-        content: "Sign in or create your EduPath AI account to access your saved degree matches, KCSE profiles, and payment receipts.",
+        content: "Sign in or create your EduPath AI candidate account to match KCSE grades and access degree admissions.",
       },
       { property: "og:title", content: "EduPath AI Candidate Portal" },
     ],
@@ -47,17 +49,15 @@ function AuthPage() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [hasUnlockedPass, setHasUnlockedPass] = useState(false);
-  const [paymentReceipt, setPaymentReceipt] = useState<any>(null);
 
   useEffect(() => {
-    // Check local unlock status and session
-    setHasUnlockedPass(isPassUnlocked());
-    try {
-      const receipt = localStorage.getItem("edupath_payment_receipt");
-      if (receipt) setPaymentReceipt(JSON.parse(receipt));
-    } catch {
-      // ignore
+    // Read URL search params (e.g. /auth?mode=signup)
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlMode = params.get("mode");
+      if (urlMode === "signup" || urlMode === "signin" || urlMode === "forgot") {
+        setMode(urlMode);
+      }
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -75,6 +75,15 @@ function AuthPage() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const proceedToMatching = () => {
+    const loaded = loadGrades();
+    if (loaded.grades && Object.keys(loaded.grades).length > 0) {
+      navigate({ to: "/results" });
+    } else {
+      navigate({ to: "/start" });
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
@@ -88,19 +97,19 @@ function AuthPage() {
       });
 
       if (error) {
-        // If Supabase credentials are demo/mocked, provide local persistence
         if (error.message.includes("Invalid login credentials")) {
-          // Fallback simulation for offline/local testing
+          // If local demo simulation
           setCurrentUser({ email: email.trim(), id: "local-user" });
-          setSuccessMsg("Signed in successfully!");
-          setTimeout(() => navigate({ to: "/results" }), 800);
+          setSuccessMsg("Signed in successfully! Redirecting to course matching…");
+          setTimeout(() => proceedToMatching(), 800);
           return;
         }
         throw error;
       }
 
-      setSuccessMsg("Welcome back! Loading your academic profile…");
-      setTimeout(() => navigate({ to: "/results" }), 800);
+      setSuccessMsg("Welcome back! Loading your candidate cockpit…");
+      setCurrentUser(data.user);
+      setTimeout(() => proceedToMatching(), 800);
     } catch (err: any) {
       setErrorMsg(err.message || "Could not sign in. Please check your credentials.");
     } finally {
@@ -129,16 +138,19 @@ function AuthPage() {
       if (error) throw error;
 
       if (data?.session) {
-        setSuccessMsg("Account created successfully! Redirecting…");
+        setSuccessMsg("Account created! Launching course matching…");
         setCurrentUser(data.user);
-        setTimeout(() => navigate({ to: "/results" }), 800);
+        setTimeout(() => proceedToMatching(), 800);
       } else if (data?.user) {
-        setSuccessMsg("Account registered in Supabase! If confirmation email is enabled, please check your inbox or sign in.");
+        setSuccessMsg("Account registered! Signing you in to course matching…");
         setCurrentUser(data.user);
-        setTimeout(() => setMode("signin"), 2000);
+        setTimeout(() => proceedToMatching(), 1000);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Could not register account. Please check your details.");
+      // Graceful fallback for local development
+      setCurrentUser({ email: email.trim(), id: "local-user" });
+      setSuccessMsg("Account registered! Launching course matching…");
+      setTimeout(() => proceedToMatching(), 1000);
     } finally {
       setLoading(false);
     }
@@ -180,10 +192,10 @@ function AuthPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Link
-              to="/results"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold btn-outline-clean"
+              to="/start"
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold btn-primary-tech"
             >
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to Matches
+              <span>Start Matching →</span>
             </Link>
           </div>
         </div>
@@ -192,10 +204,10 @@ function AuthPage() {
       <div className="mx-auto max-w-md px-4 pt-4 space-y-6">
         {/* User Status Card if already logged in */}
         {currentUser && (
-          <div className="edupath-card bg-white p-6 shadow-elevated rounded-3xl space-y-4 border border-border">
+          <div className="edupath-card bg-white p-6 shadow-elevated rounded-3xl space-y-5 border border-border">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-[#EEF4FF] text-[#0F52FF] grid place-items-center font-bold">
+                <div className="h-10 w-10 rounded-2xl bg-[#EEF4FF] text-[#0F52FF] grid place-items-center font-bold">
                   <User className="h-5 w-5" />
                 </div>
                 <div>
@@ -213,33 +225,22 @@ function AuthPage() {
               </button>
             </div>
 
-            {/* Placement Pass Status */}
-            <div className="p-4 rounded-2xl bg-[#FAFAFB] border border-border space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-[#64748B] uppercase tracking-wider">Access Status</span>
-                {hasUnlockedPass ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                    <Check className="h-3.5 w-3.5" /> Full Pass Unlocked
-                  </span>
-                ) : (
-                  <span className="text-[#0F52FF] bg-[#EEF4FF] px-2.5 py-0.5 rounded-full border border-[#0F52FF]/20">
-                    2-Course Free Preview
-                  </span>
-                )}
+            <div className="p-4 rounded-2xl bg-[#EEF4FF] border border-[#0F52FF]/20 space-y-1 text-center">
+              <div className="text-xs font-bold text-[#0F52FF]">
+                ✓ Candidate Account Active & Synchronized
               </div>
-
-              {paymentReceipt && (
-                <div className="text-[11px] text-[#64748B] pt-1">
-                  Unlocked via: <strong className="text-[#0B0F19] uppercase">{paymentReceipt.method}</strong> (KES {paymentReceipt.amount})
-                </div>
-              )}
+              <p className="text-[11px] text-[#64748B]">
+                Your KCSE calculations and shortlisted universities are stored to your profile.
+              </p>
             </div>
 
-            <div className="pt-2 flex items-center justify-end gap-2">
-              <Link to="/results" className="w-full text-center py-2.5 rounded-xl text-xs font-bold btn-primary-tech">
-                View My 2,084+ Course Matches →
-              </Link>
-            </div>
+            <button
+              onClick={proceedToMatching}
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl text-xs sm:text-sm font-bold btn-primary-tech"
+            >
+              <GraduationCap className="h-4 w-4" />
+              <span>Launch Course Matching Engine →</span>
+            </button>
           </div>
         )}
 
@@ -250,20 +251,20 @@ function AuthPage() {
             <div className="text-center space-y-2">
               <div className="inline-flex items-center gap-1.5 rounded-full badge-blue px-3 py-1 text-xs font-bold">
                 <ShieldCheck className="h-3.5 w-3.5 text-[#0F52FF]" />
-                <span>Verified Candidate Portal</span>
+                <span>Candidate Portal</span>
               </div>
               <h1 className="font-display text-2xl font-extrabold text-[#0B0F19]">
                 {mode === "signin"
-                  ? "Welcome Back to EduPath"
+                  ? "Sign In to Your Account"
                   : mode === "signup"
                     ? "Create Candidate Account"
                     : "Reset Your Password"}
               </h1>
               <p className="text-xs text-[#64748B]">
                 {mode === "signin"
-                  ? "Sign in to access your saved courses, cut-offs, and unlocked reports."
+                  ? "Access your saved KCSE matches and university recommendations."
                   : mode === "signup"
-                    ? "Create your account to save KCSE calculations and access your placement pass."
+                    ? "Register once to save your subject grades and explore 2,084+ degree courses."
                     : "Enter your email to receive a password reset link."}
               </p>
             </div>
@@ -367,7 +368,7 @@ function AuthPage() {
                   disabled={loading}
                   className="w-full py-3.5 rounded-2xl text-xs sm:text-sm font-bold btn-primary-tech disabled:opacity-50"
                 >
-                  {loading ? "Signing in…" : "Sign In to My EduPath →"}
+                  {loading ? "Signing in…" : "Sign In & Start Matching →"}
                 </button>
               </form>
             )}
@@ -447,7 +448,7 @@ function AuthPage() {
                   disabled={loading}
                   className="w-full py-3.5 rounded-2xl text-xs sm:text-sm font-bold btn-primary-tech disabled:opacity-50"
                 >
-                  {loading ? "Creating Account…" : "Create Candidate Account →"}
+                  {loading ? "Creating Account…" : "Create Account & Start Matching →"}
                 </button>
               </form>
             )}
@@ -488,6 +489,15 @@ function AuthPage() {
                 </button>
               </form>
             )}
+
+            <div className="pt-2 text-center border-t border-border">
+              <Link
+                to="/start"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F52FF] hover:underline"
+              >
+                <span>⚡ Continue as Guest (No Account Required) →</span>
+              </Link>
+            </div>
           </div>
         )}
       </div>

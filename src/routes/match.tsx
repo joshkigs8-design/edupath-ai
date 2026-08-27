@@ -187,12 +187,20 @@ function MatchPage() {
               EduPath<span className="text-[#059669]">.AI</span>
             </span>
           </Link>
-          <Link
-            to="/start"
-            className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold btn-outline-clean"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Modes
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold btn-outline-clean"
+            >
+              Sign In / Account
+            </Link>
+            <Link
+              to="/start"
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold btn-outline-clean"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Modes
+            </Link>
+          </div>
         </div>
       </div>
 

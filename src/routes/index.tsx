@@ -483,18 +483,26 @@ function HomePage() {
             <a href="#pricing" className="hover:text-[#0F52FF] transition-colors">Pricing</a>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => window.location.href = '/auth'}
+          <div className="flex items-center gap-2">
+            <Link
+              to="/auth"
+              search={{ mode: "signin" }}
               className="hidden sm:inline-flex text-xs font-bold text-[#0B0F19] hover:text-[#0F52FF] px-3 py-2 transition"
             >
               Sign In
-            </button>
+            </Link>
+            <Link
+              to="/auth"
+              search={{ mode: "signup" }}
+              className="hidden md:inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-xs font-bold btn-outline-clean"
+            >
+              Sign Up
+            </Link>
             <Link
               to="/start"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 sm:px-5 py-2.5 text-xs font-bold btn-primary-tech"
+              className="inline-flex items-center gap-1.5 rounded-full px-4 sm:px-5 py-2 text-xs font-bold btn-primary-tech"
             >
-              <span>Explore My Path</span>
+              <span>Match Courses</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
 
@@ -518,9 +526,12 @@ function HomePage() {
               <a href="#hub" onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-2xl bg-[#FAFAFB] hover:bg-[#EEF4FF] hover:text-[#0F52FF] transition text-center">Student Hub</a>
               <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-2xl bg-[#FAFAFB] hover:bg-[#EEF4FF] hover:text-[#0F52FF] transition text-center">Pricing</a>
             </div>
-            <div className="pt-2 border-t border-border flex items-center justify-between">
-              <button onClick={() => { setMobileMenuOpen(false); setSignInOpen(true); }} className="text-xs font-bold text-[#0B0F19] hover:text-[#0F52FF]">Sign In</button>
-              <Link to="/start" onClick={() => setMobileMenuOpen(false)} className="rounded-full px-4 py-2 text-xs font-bold btn-primary-tech">Explore My Path →</Link>
+            <div className="pt-3 border-t border-border flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-2">
+                <Link to="/auth" search={{ mode: "signin" }} onClick={() => setMobileMenuOpen(false)} className="text-center py-2.5 rounded-xl text-xs font-bold btn-outline-clean">Sign In</Link>
+                <Link to="/auth" search={{ mode: "signup" }} onClick={() => setMobileMenuOpen(false)} className="text-center py-2.5 rounded-xl text-xs font-bold bg-[#EEF4FF] text-[#0F52FF] border border-[#0F52FF]/20">Sign Up</Link>
+              </div>
+              <Link to="/start" onClick={() => setMobileMenuOpen(false)} className="w-full text-center py-3 rounded-2xl text-xs font-bold btn-primary-tech">Start Course Matching →</Link>
             </div>
           </div>
         )}
