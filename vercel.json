@@ -1,7 +1,4 @@
 {
-  "buildCommand": "npm run build",
-  "framework": null,
-  "env": {
-    "NITRO_PRESET": "vercel"
-  }
+  "buildCommand": "NITRO_PRESET=vercel npm run build",
+  "framework": null
 }

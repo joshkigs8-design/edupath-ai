@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EduPathLogo } from "../components/EduPathLogo";
-import { ShieldCheck, ArrowLeft, Lock, FileText, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -78,7 +78,7 @@ function PrivacyPage() {
               <li>Calculating weighted cluster points across Kenya's 23 degree clusters using official KUCCPS formulas.</li>
               <li>Matching candidate qualifications against entry requirements of 2,084+ programmes and 69 universities.</li>
               <li>Generating downloadable personalized academic strategy PDF reports.</li>
-              <li>Processing one-time placement pass transactions (KES 150) and validating voucher codes.</li>
+              <li>Processing platform transactions.</li>
             </ul>
           </section>
 

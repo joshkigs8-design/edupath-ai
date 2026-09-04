@@ -3,22 +3,15 @@ import { useState, useEffect } from "react";
 import { EduPathLogo } from "../components/EduPathLogo";
 import {
   ShieldCheck,
-  ArrowRight,
-  ArrowLeft,
   Lock,
   Mail,
   User,
   KeyRound,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
-  Receipt,
-  Check,
-  Zap,
   GraduationCap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { isPassUnlocked } from "@/lib/auth-store";
 import { loadGrades } from "@/lib/edupath-store";
 
 export const Route = createFileRoute("/auth")({
@@ -97,13 +90,6 @@ function AuthPage() {
       });
 
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          // If local demo simulation
-          setCurrentUser({ email: email.trim(), id: "local-user" });
-          setSuccessMsg("Signed in successfully! Redirecting to course matching…");
-          setTimeout(() => proceedToMatching(), 800);
-          return;
-        }
         throw error;
       }
 
@@ -147,10 +133,7 @@ function AuthPage() {
         setTimeout(() => proceedToMatching(), 1000);
       }
     } catch (err: any) {
-      // Graceful fallback for local development
-      setCurrentUser({ email: email.trim(), id: "local-user" });
-      setSuccessMsg("Account registered! Launching course matching…");
-      setTimeout(() => proceedToMatching(), 1000);
+      setErrorMsg(err.message || "Could not create account. Please try again.");
     } finally {
       setLoading(false);
     }

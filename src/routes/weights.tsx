@@ -3,7 +3,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  GraduationCap,
   ArrowRight,
   ArrowLeft,
   ShieldCheck,
@@ -12,8 +11,6 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  FileImage,
-  HelpCircle,
   Zap,
 } from "lucide-react";
 import {
@@ -356,7 +353,7 @@ function WeightsPage() {
                     </div>
                     <div className="text-[11px] text-[#64748B]">
                       {ocrState === "loading"
-                        ? "Llama 3.2 Vision is reading decimal cluster weights from the table."
+                        ? "Google Gemini Vision is reading decimal cluster weights from the table."
                         : "Verify values below before proceeding."}
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { EduPathLogo, EduPathLogoIcon } from "../components/EduPathLogo";
+import { EduPathLogo } from "../components/EduPathLogo";
 import {
   GraduationCap,
   Sparkles,
@@ -24,7 +24,6 @@ import {
   Send,
   MapPin,
   Lock,
-  FileText,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -297,7 +296,7 @@ const CAREER_DOMAINS = {
         id: "med-intern",
         stage: "Stage 01 · Entry",
         title: "Medical Officer / Intern",
-        salary: "FREEK - 220K/mo",
+        salary: "KES 120K - 220K/mo",
         skills: "Clinical Diagnosis, Patient Management, ER Care",
         growth: "High Continuous Demand",
         desc: "Diagnoses illnesses, manages patient wards, and performs emergency triage in national hospitals.",
@@ -417,7 +416,7 @@ function HomePage() {
     setTimeout(() => {
       let botResponse = "";
       if (prompt.includes("best courses")) {
-        botResponse = "Based on your 41.4 cluster points, your top 2 free preview matches are: 1) Computer Science at JKUAT (96% fit) and 2) Medicine at UoN (95% fit). Unlock the full pass for all 48+ options.";
+        botResponse = "Based on your 41.4 cluster points, your top eligible matches include: 1) Computer Science at JKUAT (96% fit) and 2) Medicine at UoN (95% fit), along with 48+ other programmes.";
       } else if (prompt.includes("universities")) {
         botResponse = "You qualify for 12 public universities including JKUAT, UoN, KU, and Moi, plus chartered private institutions like Strathmore and USIU-Africa.";
       } else if (prompt.includes("careers")) {
@@ -1147,27 +1146,27 @@ function HomePage() {
         </div>
       </section>
 
-      {/* 13. PRICING / PAYWALL PASS (FOCUSED SINGLE OFFER) */}
+      {/* 13. 100% FREE OPEN ACCESS */}
       <section id="pricing" className="py-20 px-4 max-w-4xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <p className="text-xs font-bold uppercase tracking-wider text-[#0F52FF] mb-2">Transparent Access</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-[#0B0F19]">Invest in clarity.</h2>
-          <p className="mt-2 text-sm text-[#64748B]">Preview your top 2 matches completely free. Unlock full placement intelligence for all courses and official PDF download.</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-[#0B0F19]">100% Free for Every Student</h2>
+          <p className="mt-2 text-sm text-[#64748B]">Explore all 2,084+ degree programmes, university cut-off margins, career roadmaps, and download your official PDF report — completely free.</p>
         </div>
 
         <div className="edupath-card p-8 sm:p-12 bg-white border-2 border-[#0F52FF] shadow-elevated rounded-3xl relative overflow-hidden">
           <div className="absolute top-0 right-0 rounded-bl-2xl bg-[#0F52FF] text-white px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
-            Full Access Pass
+            100% Free
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full badge-emerald px-3 py-1 text-xs font-bold">
                 <Check className="h-3.5 w-3.5" />
-                <span>100% Free Open Access for Kenyan Students Included</span>
+                <span>100% Free Open Access for Kenyan Students</span>
               </div>
               <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0B0F19]">
-                EduPath AI Placement Pass
+                EduPath AI Open Access
               </h3>
               <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
                 Full unrestricted access to every degree programme, university cut-off differential, 5-stage career roadmaps, and your official downloadable PDF report.
@@ -1186,12 +1185,12 @@ function HomePage() {
             <div className="lg:col-span-5 p-6 rounded-2xl bg-[#FAFAFB] border border-border text-center space-y-4">
               <div className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Open Access</div>
               <div className="font-display text-4xl sm:text-5xl font-extrabold text-[#0B0F19]">
-                FREE
+                100% FREE
               </div>
-              <p className="text-[11px] text-[#64748B]">No subscriptions. Valid for your entire KUCCPS revision cycle.</p>
+              <p className="text-[11px] text-[#64748B]">No paywall. No hidden fees. Valid for your entire KUCCPS revision cycle.</p>
               
               <Link to="/start" className="w-full inline-flex items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-bold btn-primary-tech">
-                <span>Start Free Preview</span>
+                <span>Start Free Matching</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <div className="text-[10px] text-[#64748B]">Instant calculation for all 2,084+ degree programmes</div>

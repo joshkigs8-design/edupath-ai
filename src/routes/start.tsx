@@ -66,7 +66,7 @@ function StartPage() {
 
       {/* Main Container */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
-        <div className="text-center max-w-2xl mx-auto mb-12 animate-fade-in">
+        <div className="mb-10 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs mb-3">
             <Sparkles className="h-3.5 w-3.5 text-[#0F52FF]" />
             <span>Step 1 of 3 · Engine Selection</span>

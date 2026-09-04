@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { EduPathLogo } from "../components/EduPathLogo";
-import { ShieldCheck, ArrowLeft, FileText, Scale } from "lucide-react";
+import { ArrowLeft, Scale } from "lucide-react";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/terms")({
       { title: "Terms and Conditions — EduPath AI" },
       {
         name: "description",
-        content: "EduPath AI Terms and Conditions governing platform usage, one-time KES 150 placement passes, vouchers, and educational guidance disclaimers.",
+        content: "EduPath AI Terms and Conditions governing platform usage, free open access course matching, and educational guidance disclaimers.",
       },
     ],
   }),
@@ -70,19 +70,18 @@ function TermsPage() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-[#0B0F19]">3. Pricing, Payments & Placement Pass (KES 150)</h2>
+            <h2 className="font-display text-xl font-bold text-[#0B0F19]">3. Free Open Access Platform</h2>
             <ul className="list-disc list-inside space-y-2 pl-2">
-              <li><strong>Free Preview:</strong> All candidates have complimentary access to preview their top 2 matched degree programmes.</li>
-              <li><strong>Full Access Pass:</strong> Full access to all 2,084+ degree and diploma programmes, university cut-off margins, career salary maps, and official PDF report generation is available for a one-time fee of <strong>KES 150</strong>.</li>
-              <li><strong>No Subscriptions:</strong> The Placement Pass is a one-time payment valid for the candidate's entire current revision and placement cycle. No recurring charges will occur.</li>
-              <li><strong>Refund Policy:</strong> Due to the immediate delivery of digital intelligence and computational reports, all completed transactions are non-refundable once unlocked. If you experience technical transaction issues, contact support for immediate manual resolution.</li>
+              <li><strong>100% Free Access:</strong> All candidates have full, complimentary access to explore all 2,084+ degree and diploma programmes across Kenyan universities.</li>
+              <li><strong>Comprehensive Intelligence:</strong> University cut-off margins, career salary maps, cluster calculations, and personalized PDF reports are completely free of charge.</li>
+              <li><strong>No Hidden Fees or Subscriptions:</strong> EduPath AI is committed to open educational access for all Kenyan students. There are no paywalls, hidden charges, or recurring subscriptions.</li>
             </ul>
           </section>
 
           <section className="space-y-3">
-            <h2 className="font-display text-xl font-bold text-[#0B0F19]">4. Promotional Codes & Vouchers</h2>
+            <h2 className="font-display text-xl font-bold text-[#0B0F19]">4. Partner Access & Special Programs</h2>
             <p>
-              Vouchers issued by EduPath AI, partner high schools, or authorized promotional campaigns grant full or partial fee waivers. Vouchers are non-transferable, cannot be redeemed for cash, and expire on the date designated at issuance.
+              Access codes or vouchers issued by EduPath AI, partner high schools, or authorized promotional campaigns grant access to cohort management tools and beta capabilities. Codes are non-transferable and cannot be redeemed for cash.
             </p>
           </section>
 

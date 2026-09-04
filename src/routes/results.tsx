@@ -3,9 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  GraduationCap,
   Search,
-  Filter,
   ArrowLeft,
   Sparkles,
   TrendingUp,
@@ -14,18 +12,9 @@ import {
   Target,
   X,
   Download,
-  ShieldCheck,
-  Calculator,
-  CheckCircle2,
   AlertCircle,
-  ChevronRight,
   SlidersHorizontal,
-  MapPin,
-  Clock,
-  ArrowUpDown,
-  BookOpen,
   Bookmark,
-  Check,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -38,7 +27,7 @@ import {
   type ClusterWeights,
   type MatchMode,
 } from "@/lib/edupath-store";
-import { matchProgramme, meanPoints, calculateAll23Clusters, getProgrammeCluster, bestFour, bestSeven, weightedCluster, type Programme, type MatchResult } from "@/lib/kcse";
+import { meanPoints, calculateAll23Clusters, getProgrammeCluster, bestFour, bestSeven, weightedCluster, type Programme, type MatchResult } from "@/lib/kcse";
 import { downloadReport } from "@/lib/edupath-pdf";
 
 export const Route = createFileRoute("/results")({
@@ -128,7 +117,7 @@ function ResultsPage() {
       const loaded = loadGrades();
       let activeGrades = loaded.grades;
       if (!activeGrades || Object.keys(activeGrades).length === 0) {
-        activeGrades = { ENG: "B+", KIS: "B", MAT: "A-", BIO: "B+", CHE: "B+", PHY: "B", GEO: "A" };
+        activeGrades = {};
       }
       setGrades(activeGrades);
       setName(loaded.name || "");
@@ -176,6 +165,10 @@ function ResultsPage() {
       Object.entries(grades).filter(([k]) => k !== "_meta_candidate_name")
     );
 
+    if (mode !== "official" && Object.keys(validSubjectGrades).length === 0) {
+      return [];
+    }
+
     // Calculate all 23 clusters for the candidate
     const calculatedClusters = calculateAll23Clusters(validSubjectGrades);
     const fallbackCluster = weightedCluster(bestFour(validSubjectGrades), bestSeven(validSubjectGrades));
@@ -205,13 +198,22 @@ function ResultsPage() {
               ? "competitive"
               : "unlikely";
 
+      const meetsRequirements = !p.requirements?.length || p.requirements.every((req: any) => {
+        if (!req || !req.subject || !req.grade) return true;
+        const candidateGrade = validSubjectGrades[req.subject];
+        if (!candidateGrade) return false;
+        const GRADE_ORDER = ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E'];
+        return GRADE_ORDER.indexOf(candidateGrade) <= GRADE_ORDER.indexOf(req.grade);
+      });
+      const qualified = meetsRequirements && userPoints > 0;
+
       return {
         programme: p,
         clusterPoints: +(userPoints.toFixed(3)),
         rawClusterSum: +(userPoints.toFixed(3)),
         bestSevenTotal: bestSeven(validSubjectGrades),
-        meetsRequirements: true,
-        qualified: true,
+        meetsRequirements,
+        qualified,
         delta,
         cutoff,
         chance,
@@ -529,6 +531,22 @@ function ResultsPage() {
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="h-28 animate-pulse rounded-3xl edupath-card bg-white" />
                 ))}
+              </div>
+            ) : mode !== "official" && Object.keys(grades).filter((k) => k !== "_meta_candidate_name").length === 0 ? (
+              <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle">
+                <AlertCircle className="mx-auto h-10 w-10 text-[#64748B] mb-3" />
+                <h3 className="font-display font-bold text-lg text-[#0B0F19]">
+                  No grades entered
+                </h3>
+                <p className="mt-1 text-xs text-[#64748B] max-w-md mx-auto">
+                  Please enter your KCSE grades to see your course matches and eligibility.
+                </p>
+                <Link
+                  to="/match"
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold btn-primary-tech"
+                >
+                  Enter KCSE Grades
+                </Link>
               </div>
             ) : filtered.length === 0 ? (
               <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle">

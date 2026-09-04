@@ -2,22 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { EduPathLogo } from "../components/EduPathLogo";
 import {
-  ShieldCheck,
   Users,
   Ticket,
   DollarSign,
-  Plus,
   Trash2,
   Copy,
   Check,
   Lock,
-  ArrowLeft,
-  TrendingUp,
-  BarChart3,
   Search,
-  Filter,
   CheckCircle2,
-  Calendar,
 } from "lucide-react";
 import { loadVouchers, saveVouchers, type Voucher } from "@/lib/auth-store";
 
@@ -137,7 +130,7 @@ function AdminPage() {
                 placeholder="Enter PIN (e.g. 2026)"
                 className="w-full text-center text-lg font-mono font-bold tracking-widest rounded-xl border border-border bg-[#FAFAFB] py-3 outline-none focus:border-[#0F52FF]"
               />
-              {pinError && <p className="text-xs text-red-600 font-bold mt-1.5">Incorrect PIN. Hint: 2026</p>}
+              {pinError && <p className="text-xs text-red-600 font-bold mt-1.5">Incorrect PIN.</p>}
             </div>
             <button type="submit" className="w-full py-3.5 rounded-2xl text-xs font-bold btn-primary-tech">
               Access Admin Command →
