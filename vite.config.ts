@@ -16,6 +16,9 @@ export default defineConfig({
       },
     },
   },
+  tanstackStart: {
+    client: { entry: "client" },
+  },
   nitro: {
     preset: "vercel",
   },
