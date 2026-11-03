@@ -22,3 +22,4 @@ Disallow: /payment/callback
 # Host & Sitemaps
 Host: https://edupath.co.ke
 Sitemap: https://edupath.co.ke/sitemap.xml
+
