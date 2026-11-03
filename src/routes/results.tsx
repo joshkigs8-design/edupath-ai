@@ -36,18 +36,30 @@ import { downloadReport } from "@/lib/edupath-pdf";
 export const Route = createFileRoute("/results")({
   head: () => ({
     meta: [
-      { title: "Course Intelligence Results — EduPath AI" },
+      { title: "Your Qualified University Degrees & KUCCPS Cut-Offs | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Every Kenyan university degree programme you qualify for, based on your KCSE grades.",
+          "View every Kenyan university degree and diploma you qualify for based on official KUCCPS cut-offs. Filter by institution, cluster score, and admission probability.",
       },
-      { property: "og:title", content: "Your Course Matches — EduPath AI" },
+      {
+        name: "keywords",
+        content:
+          "KUCCPS qualified courses, university cut-off points Kenya 2025, University of Nairobi cutoffs, JKUAT admission chances, degree match results Kenya, KUCCPS revision list",
+      },
+      { property: "og:title", content: "Your Qualified University Degrees — EduPath AI Kenya" },
       {
         property: "og:description",
-        content: "See every eligible degree programme, cut-off, and admission chance in seconds.",
+        content:
+          "Explore every eligible degree programme, cut-off history, and admission probability across 69 Kenyan universities.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/results" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/results" }],
   }),
   component: ResultsPage,
 });

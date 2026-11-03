@@ -22,18 +22,29 @@ import {
 export const Route = createFileRoute("/cluster")({
   head: () => ({
     meta: [
-      { title: "Your Cluster Points Studio — EduPath AI" },
+      { title: "KCSE Cluster Points Studio & Score Breakdown | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Instant KCSE cluster point calculation — mean grade, best-4 aggregate, and per-subject points before matching to Kenyan university programmes.",
+          "Instant KCSE cluster points calculation — mean grade, best-4 aggregate, and per-subject points broken down before matching to Kenyan university programmes.",
       },
-      { property: "og:title", content: "Your Cluster Points — EduPath AI" },
+      {
+        name: "keywords",
+        content:
+          "KCSE cluster points breakdown, aggregate score calculation, best 4 cluster subjects Kenya, KUCCPS grade analyzer, university entry score Kenya",
+      },
+      { property: "og:title", content: "Your Cluster Points Studio — EduPath AI Kenya" },
       {
         property: "og:description",
-        content: "See your KCSE cluster points before we match you to degree programmes.",
+        content: "See your KCSE cluster points breakdown before matching to Kenyan degree programmes.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/cluster" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/cluster" }],
   }),
   component: ClusterPage,
 });

@@ -6,6 +6,12 @@ import { unlockFullPass } from "@/lib/auth-store";
 import { verifyPaystackSubscription } from "@/lib/paystack.functions";
 
 export const Route = createFileRoute("/payment/callback")({
+  head: () => ({
+    meta: [
+      { title: "Payment Verification — EduPath AI" },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
   component: PaymentCallbackPage,
 });
 

@@ -5,13 +5,19 @@ import { ShieldCheck, ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — EduPath AI" },
+      { title: "Privacy Policy & Kenya Data Protection Compliance | EduPath AI" },
       {
         name: "description",
         content:
           "EduPath AI Privacy Policy explaining how we collect, process, protect and store Kenyan KCSE student academic data in compliance with the Kenya Data Protection Act 2019.",
       },
+      { property: "og:title", content: "Privacy Policy — EduPath AI Kenya" },
+      { property: "og:url", content: "https://edupath.co.ke/privacy" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/privacy" }],
   }),
   component: PrivacyPage,
 });

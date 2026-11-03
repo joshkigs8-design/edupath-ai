@@ -5,13 +5,19 @@ import { ArrowLeft, Scale } from "lucide-react";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms and Conditions — EduPath AI" },
+      { title: "Terms of Service & Usage Conditions | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "EduPath AI Terms and Conditions governing platform usage, free open access course matching, and educational guidance disclaimers.",
+          "EduPath AI Terms and Conditions governing platform usage, free open access course matching, and educational guidance disclaimers in Kenya.",
       },
+      { property: "og:title", content: "Terms of Service — EduPath AI Kenya" },
+      { property: "og:url", content: "https://edupath.co.ke/terms" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/terms" }],
   }),
   component: TermsPage,
 });

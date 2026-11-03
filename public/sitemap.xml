@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <!-- Homepage -->
+  <url>
+    <loc>https://edupath.co.ke/</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/" />
+    <xhtml:link rel="alternate" hreflang="sw-KE" href="https://edupath.co.ke/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://edupath.co.ke/" />
+  </url>
+
+  <!-- Start Engine Selector -->
+  <url>
+    <loc>https://edupath.co.ke/start</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/start" />
+  </url>
+
+  <!-- Grade Entry & KCSE Academic Cockpit -->
+  <url>
+    <loc>https://edupath.co.ke/match</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/match" />
+  </url>
+
+  <!-- Weights & OCR Slip Scanner -->
+  <url>
+    <loc>https://edupath.co.ke/weights</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/weights" />
+  </url>
+
+  <!-- Cluster Studio -->
+  <url>
+    <loc>https://edupath.co.ke/cluster</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/cluster" />
+  </url>
+
+  <!-- Results & Intelligence Hub -->
+  <url>
+    <loc>https://edupath.co.ke/results</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="en-KE" href="https://edupath.co.ke/results" />
+  </url>
+
+  <!-- Legal & Privacy -->
+  <url>
+    <loc>https://edupath.co.ke/privacy</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://edupath.co.ke/terms</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

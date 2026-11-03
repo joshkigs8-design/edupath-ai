@@ -30,18 +30,29 @@ import { saveGrades, loadGrades, saveMode } from "@/lib/edupath-store";
 export const Route = createFileRoute("/match")({
   head: () => ({
     meta: [
-      { title: "Academic Cockpit — Enter KCSE Grades — EduPath AI" },
+      { title: "Academic Cockpit — Enter KCSE Grades & Match University Courses | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Select your KCSE grade for each subject and instantly discover every Kenyan degree programme you qualify for.",
+          "Input your KCSE subject grades (English, Kiswahili, Math, Sciences, Humanities) and calculate university course qualification instantly under KUCCPS criteria.",
       },
-      { property: "og:title", content: "Enter Your KCSE Grades — EduPath AI" },
+      {
+        name: "keywords",
+        content:
+          "KCSE grade entry, enter KCSE grades, KUCCPS degree qualification, KCSE points calculator Kenya, best 7 KCSE subjects, calculate aggregate points Kenya",
+      },
+      { property: "og:title", content: "Enter Your KCSE Grades — EduPath AI Kenya" },
       {
         property: "og:description",
-        content: "Match against 2,000+ Kenyan university programmes in under a second.",
+        content: "Match against 2,084+ Kenyan university programmes across 69 institutions in seconds.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/match" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/match" }],
   }),
   component: MatchPage,
 });

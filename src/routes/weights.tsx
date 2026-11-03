@@ -28,19 +28,30 @@ import { extractWeightsFromImage } from "@/lib/ocr-weights.functions";
 export const Route = createFileRoute("/weights")({
   head: () => ({
     meta: [
-      { title: "Official Cluster Weights & Google Gemini Vision AI — EduPath AI" },
+      { title: "KUCCPS Cluster Weights & KCSE Slip OCR Scanner | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Enter your official KUCCPS cluster weights or upload a screenshot to auto-fill with Google Gemini Vision AI.",
+          "Calculate or auto-extract your official KUCCPS 23 cluster weights using Google Gemini Vision AI OCR. Scan your KNEC KCSE result slip for instant course matching.",
       },
-      { property: "og:title", content: "Enter KUCCPS Cluster Weights — EduPath AI" },
+      {
+        name: "keywords",
+        content:
+          "KUCCPS cluster weights, KCSE result slip scanner OCR, Google Gemini OCR Kenya, cluster weight formula, 23 clusters KUCCPS, university cutoff points Kenya",
+      },
+      { property: "og:title", content: "Official KUCCPS Cluster Weights & AI OCR — EduPath AI Kenya" },
       {
         property: "og:description",
         content:
-          "Enter all 23 KUCCPS cluster weights and instantly match against every eligible Kenyan degree programme.",
+          "Scan your KCSE result slip or enter your 23 cluster weights to find every eligible degree in Kenya.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/weights" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/weights" }],
   }),
   component: WeightsPage,
 });

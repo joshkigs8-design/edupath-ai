@@ -17,14 +17,20 @@ import { loadGrades } from "@/lib/edupath-store";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Candidate Account — Sign In & Sign Up — EduPath AI" },
+      { title: "Candidate Account — Sign In & Sign Up | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Sign in or create your EduPath AI candidate account to match KCSE grades and access degree admissions.",
+          "Sign in or create your EduPath AI candidate account to save KCSE grades, cluster weights, and explore Kenyan university admissions.",
       },
-      { property: "og:title", content: "EduPath AI Candidate Portal" },
+      { property: "og:title", content: "Candidate Portal — EduPath AI Kenya" },
+      { property: "og:url", content: "https://edupath.co.ke/auth" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/auth" }],
   }),
   component: AuthPage,
 });

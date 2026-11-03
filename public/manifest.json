@@ -1,0 +1,21 @@
+{
+  "name": "EduPath AI — Smart KCSE Course Matcher Kenya",
+  "short_name": "EduPath AI",
+  "description": "Calculate your KCSE cluster points, check KUCCPS cutoff points, and discover qualifying university degrees in Kenya.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090D16",
+  "theme_color": "#2563EB",
+  "orientation": "portrait-primary",
+  "lang": "en-KE",
+  "scope": "/",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -16,18 +16,29 @@ import { saveMode } from "@/lib/edupath-store";
 export const Route = createFileRoute("/start")({
   head: () => ({
     meta: [
-      { title: "Select Matching Engine — EduPath AI" },
+      { title: "Select Matching Engine — KCSE Cluster Calculator | EduPath AI Kenya" },
       {
         name: "description",
         content:
-          "Choose between official KUCCPS cluster weights matching or KCSE subject grade estimation.",
+          "Choose between official KUCCPS cluster weights calculation with Gemini Vision AI OCR or manual KCSE subject grade entry for university course matching in Kenya.",
       },
-      { property: "og:title", content: "Select Matching Engine — EduPath AI" },
+      {
+        name: "keywords",
+        content:
+          "KUCCPS matching engine, KCSE grades calculator, KUCCPS cluster weights, Kenyan universities admission, course eligibility checker Kenya",
+      },
+      { property: "og:title", content: "Select Matching Engine — EduPath AI Kenya" },
       {
         property: "og:description",
-        content: "Two ways to match: official KUCCPS cluster weights or KCSE grades.",
+        content: "Two ways to match: official KUCCPS cluster weights or manual KCSE grades.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/start" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/start" }],
   }),
   component: StartPage,
 });

@@ -23,24 +23,44 @@ import {
   Send,
   MapPin,
   Lock,
+  ChevronDown,
+  HelpCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EduPath AI — AI-Powered KCSE Course Matching & Career Guidance" },
+      { title: "EduPath AI — Kenya KCSE Cluster Points Calculator & KUCCPS Course Matcher" },
       {
         name: "description",
         content:
-          "EduPath AI turns your KCSE grades, cluster weights, and ambitions into a clear, validated path toward the right Kenyan university degree and career.",
+          "Calculate your KCSE weighted cluster points and find matching courses across 69 Kenyan universities. Instant KUCCPS cut-off point intelligence and degree eligibility.",
       },
-      { property: "og:title", content: "EduPath AI — Find the Path That Fits Your Future" },
+      {
+        name: "keywords",
+        content:
+          "KUCCPS cluster points calculator, KCSE course matcher, KCSE results Kenya, KUCCPS university cut off points, Kenyan universities cluster points, calculate cluster points online Kenya, KUCCPS courses 2025 2026, UoN, JKUAT, Kenyatta University, Strathmore",
+      },
+      { property: "og:title", content: "EduPath AI — Kenya KCSE Cluster Points & KUCCPS Degree Advisor" },
       {
         property: "og:description",
         content:
-          "AI-powered education guidance for Kenyan students. Explore 2,084 degree programmes and 69 universities.",
+          "Turn KCSE grades into qualified university degree programmes. 2,084+ courses, 69 Kenyan universities, instant cluster calculation.",
       },
+      { property: "og:url", content: "https://edupath.co.ke/" },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "twitter:title", content: "EduPath AI — Kenya KCSE Course Matcher & KUCCPS Advisor" },
+      {
+        name: "twitter:description",
+        content:
+          "Calculate your KCSE weighted cluster points and discover all qualifying degree programmes in Kenya instantly.",
+      },
+      { name: "twitter:image", content: "https://edupath.co.ke/og-image.svg" },
+      { name: "geo.region", content: "KE" },
+      { name: "geo.placename", content: "Nairobi, Kenya" },
     ],
+    links: [{ rel: "canonical", href: "https://edupath.co.ke/" }],
   }),
   component: HomePage,
 });
@@ -516,8 +536,32 @@ const CAREER_DOMAINS = {
   },
 };
 
+const FAQS = [
+  {
+    q: "How does EduPath AI calculate KCSE cluster points for KUCCPS?",
+    a: "EduPath AI calculates your weighted cluster points using the official KUCCPS formula: C = sqrt((r / m) * (t / 84)) * 48, where 'r' is the sum of raw points in the four required cluster subjects, 'm' is maximum points for those subjects (48), and 't' is your total KCSE aggregate score out of 84.",
+  },
+  {
+    q: "Which Kenyan universities and colleges are covered on EduPath AI?",
+    a: "EduPath AI covers all 69 Kenyan public and chartered private universities, including University of Nairobi (UoN), JKUAT, Kenyatta University (KU), Strathmore University, Moi University, Egerton, Maseno University, Mount Kenya University, Daystar, and USIU-Africa with historic KUCCPS cutoff points.",
+  },
+  {
+    q: "Can I find courses I qualify for if I scored C+, C, or C- in KCSE?",
+    a: "Yes. EduPath AI analyzes eligibility for bachelor degrees (minimum KCSE C+ grade) as well as diploma and TVET programmes (C plain, C minus, and below), matching you with available opportunities and career pathways.",
+  },
+  {
+    q: "Can I scan my KNEC KCSE result slip with AI?",
+    a: "Yes. EduPath AI includes Google Gemini Vision AI OCR slip scanning on the Cluster Weights page, allowing candidates to snap or upload a photo of their KNEC KCSE result slip to auto-fill grades and subject codes instantly.",
+  },
+  {
+    q: "How accurate are the university cutoff points on EduPath AI?",
+    a: "All course cutoffs and subject requirements are sourced directly from the latest official KUCCPS placement booklet and university admission databases, giving candidates authentic and dependable admissions intelligence.",
+  },
+];
+
 function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeCourseCategory, setActiveCourseCategory] = useState<string>("all");
   const [activeUniType, setActiveUniType] = useState<string>("all");
   const [uniSearchQuery, setUniSearchQuery] = useState("");
@@ -650,6 +694,9 @@ function HomePage() {
             <a href="#hub" className="hover:text-blue-600 transition-colors">
               Student Hub
             </a>
+            <a href="#faq" className="hover:text-blue-600 transition-colors">
+              FAQs
+            </a>
             <a href="#pricing" className="hover:text-blue-600 transition-colors">
               Pricing
             </a>
@@ -725,6 +772,13 @@ function HomePage() {
                 className="p-3 rounded-2xl bg-[#F8FAFC] hover:bg-blue-50 hover:text-blue-600 transition text-center"
               >
                 Student Hub
+              </a>
+              <a
+                href="#faq"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-3 rounded-2xl bg-[#F8FAFC] hover:bg-blue-50 hover:text-blue-600 transition text-center"
+              >
+                FAQs
               </a>
               <a
                 href="#pricing"
@@ -1913,6 +1967,53 @@ function HomePage() {
         </div>
       </section>
 
+      {/* 14.5 FREQUENTLY ASKED QUESTIONS (SEO & GEO FAQ ACCORDION) */}
+      <section id="faq" className="py-20 px-4 max-w-4xl mx-auto">
+        <div className="text-center space-y-3 mb-12">
+          <div className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
+            <HelpCircle className="h-3.5 w-3.5 text-blue-600" />
+            <span>KUCCPS &amp; KCSE Guidance • Kenya</span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-[#090D16] tracking-tight">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-sm sm:text-base text-[#64748B] max-w-xl mx-auto">
+            Everything Kenyan candidates, parents, and schools need to know about KCSE cluster points calculation and KUCCPS course placement.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          {FAQS.map((faq, index) => {
+            const isOpen = openFaqIndex === index;
+            return (
+              <div
+                key={index}
+                className="rounded-2xl border border-border bg-white transition shadow-subtle overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-display font-bold text-base text-[#090D16] hover:text-blue-600 transition"
+                  aria-expanded={isOpen}
+                >
+                  <span className="flex-1">{faq.q}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 text-blue-600 transition-transform duration-200 shrink-0 ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-1 text-sm text-[#475569] leading-relaxed border-t border-slate-100">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* 15. FINAL CTA */}
       <section className="py-20 px-4 max-w-5xl mx-auto">
         <div className="relative rounded-3xl overflow-hidden shadow-elevated p-8 sm:p-14 text-center text-white bg-[#090D16]">
@@ -1991,9 +2092,9 @@ function HomePage() {
                 </Link>
               </li>
               <li>
-                <Link to="/start" className="hover:text-blue-600 transition">
+                <a href="#faq" className="hover:text-blue-600 transition">
                   FAQs
-                </Link>
+                </a>
               </li>
               <li>
                 <Link to="/start" className="hover:text-blue-600 transition">
@@ -2039,7 +2140,13 @@ function HomePage() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <div>© 2026 EduPath AI. All rights reserved.</div>
+          <div className="space-y-1">
+            <div>© 2026 EduPath AI Kenya. All rights reserved.</div>
+            <div className="flex items-center justify-center sm:justify-start gap-1.5 text-[11px] text-[#64748B]">
+              <MapPin className="h-3.5 w-3.5 text-blue-600 inline shrink-0" />
+              <span>Nairobi, Kenya • Compliant with Kenya Data Protection Act 2019</span>
+            </div>
+          </div>
           <div className="font-medium text-[#090D16]">
             Don't just choose a course. Discover your path.
           </div>

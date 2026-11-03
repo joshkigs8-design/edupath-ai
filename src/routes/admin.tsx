@@ -15,11 +15,12 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Portal & Voucher Manager — EduPath AI" },
+      { title: "Admin Portal & Voucher Manager — EduPath AI Kenya" },
       {
         name: "description",
         content: "EduPath AI Administrative portal for monitoring real-time student signups and voucher codes.",
       },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: AdminPage,

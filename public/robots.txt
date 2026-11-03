@@ -1,0 +1,24 @@
+# EduPath AI - Kenyan KCSE Course Matcher & KUCCPS Degree Advisor
+# https://edupath.co.ke
+
+User-agent: *
+Allow: /
+Allow: /start
+Allow: /match
+Allow: /weights
+Allow: /cluster
+Allow: /results
+Allow: /privacy
+Allow: /terms
+Allow: /favicon.svg
+Allow: /og-image.svg
+Allow: /site.webmanifest
+
+# Disallow admin portal, private authentication endpoints, and callbacks
+Disallow: /admin
+Disallow: /api/
+Disallow: /payment/callback
+
+# Host & Sitemaps
+Host: https://edupath.co.ke
+Sitemap: https://edupath.co.ke/sitemap.xml
