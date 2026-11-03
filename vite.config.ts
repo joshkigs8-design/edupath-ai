@@ -7,10 +7,16 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: "assets/app.js",
+        },
+      },
+    },
+  },
   nitro: {
     preset: "vercel",
-  },
-  tanstackStart: {
-    server: { entry: "server" },
   },
 });
