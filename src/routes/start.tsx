@@ -1,7 +1,6 @@
 import { EduPathLogo } from "../components/EduPathLogo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  GraduationCap,
   ArrowRight,
   ShieldCheck,
   Calculator,
@@ -35,22 +34,17 @@ export const Route = createFileRoute("/start")({
 
 function StartPage() {
   return (
-    <div className="min-h-screen pb-20 bg-[#FAFAFB] text-[#0B0F19] antialiased">
+    <div className="page-shell min-h-screen pb-20 bg-[#F8FAFC] text-[#090D16] antialiased">
       {/* Top Floating Capsule Navigation */}
       <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="capsule-navbar rounded-full px-5 py-3 flex items-center justify-between shadow-subtle">
-          <Link to="/" className="inline-flex items-center gap-2.5">
-            <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#0F52FF] text-white shadow-sm">
-              <GraduationCap className="h-4 w-4" />
-            </div>
-            <span className="font-display font-extrabold tracking-tight text-lg text-[#0B0F19]">
-              EduPath<span className="text-[#059669]">.AI</span>
-            </span>
+        <div className="capsule-navbar rounded-full px-5 py-3.5 flex items-center justify-between shadow-subtle">
+          <Link to="/" className="inline-flex items-center">
+            <EduPathLogo size="sm" />
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Link
               to="/auth"
-              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold btn-outline-clean"
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold btn-outline-clean"
             >
               Sign In / Account
             </Link>
@@ -66,13 +60,13 @@ function StartPage() {
 
       {/* Main Container */}
       <div className="mx-auto max-w-5xl px-4 pt-6">
-        <div className="mb-10 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs mb-3">
-            <Sparkles className="h-3.5 w-3.5 text-[#0F52FF]" />
+        <div className="mb-12 text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs font-bold mb-3">
+            <Sparkles className="h-3.5 w-3.5 text-blue-600" />
             <span>Step 1 of 3 · Engine Selection</span>
           </div>
-          <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-tight text-[#0B0F19]">
-            Select Your <span className="text-[#0F52FF]">Matching Engine</span>
+          <h1 className="hero-title font-display text-4xl sm:text-5xl font-extrabold tracking-tight">
+            Select Your <span className="text-blue-600">Matching Engine</span>
           </h1>
           <p className="mt-3 text-[#64748B] text-sm sm:text-base leading-relaxed">
             Choose the method matching the information you currently have. You can switch between
@@ -83,19 +77,19 @@ function StartPage() {
         {/* Dual Mode Cards */}
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 items-stretch">
           {/* Mode 1: Official Portal Weights */}
-          <div className="edupath-card bg-white p-8 sm:p-9 flex flex-col justify-between shadow-elevated relative overflow-hidden group hover:border-[#0F52FF]/40 transition">
+          <div className="edupath-card bg-white p-8 sm:p-9 flex flex-col justify-between shadow-card relative overflow-hidden group hover:border-blue-500/40 hover:-translate-y-1 transition duration-300">
             <div>
               <div className="flex items-center justify-between gap-3 mb-6">
-                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#0F52FF] text-white shadow-blue">
+                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-blue">
                   <ShieldCheck className="h-7 w-7" />
                 </div>
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 px-3 py-1 text-xs font-extrabold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span>100% Official Accuracy</span>
                 </div>
               </div>
 
-              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0B0F19]">
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#090D16]">
                 Official KUCCPS Weights
               </h2>
               <p className="mt-2.5 text-xs sm:text-sm text-[#64748B] leading-relaxed">
@@ -110,8 +104,8 @@ function StartPage() {
                   "Explore courses in any field by toggling active clusters on the results page.",
                 ].map((text, i) => (
                   <div key={i} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-[#0F52FF] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm text-[#0B0F19] font-medium">{text}</span>
+                    <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm text-[#090D16] font-medium">{text}</span>
                   </div>
                 ))}
               </div>
@@ -120,7 +114,9 @@ function StartPage() {
             <div className="mt-8 pt-6 border-t border-border">
               <div className="mb-4 flex items-center justify-between text-xs text-[#64748B] font-semibold">
                 <span>Setup: ~ 30 seconds</span>
-                <span className="text-[#0F52FF] font-bold">AI Vision Enabled</span>
+                <span className="text-blue-600 font-bold flex items-center gap-1">
+                  <Sparkles className="h-3.5 w-3.5" /> AI Vision Enabled
+                </span>
               </div>
               <Link
                 to="/weights"
@@ -134,19 +130,19 @@ function StartPage() {
           </div>
 
           {/* Mode 2: KCSE Subject Estimator */}
-          <div className="edupath-card bg-white p-8 sm:p-9 flex flex-col justify-between shadow-elevated relative overflow-hidden group hover:border-[#0F52FF]/40 transition">
+          <div className="edupath-card bg-white p-8 sm:p-9 flex flex-col justify-between shadow-card relative overflow-hidden group hover:border-blue-500/40 hover:-translate-y-1 transition duration-300">
             <div>
               <div className="flex items-center justify-between gap-3 mb-6">
-                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#EEF4FF] text-[#0F52FF]">
+                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
                   <Calculator className="h-7 w-7" />
                 </div>
                 <div className="inline-flex items-center gap-1.5 rounded-full badge-emerald px-3 py-1 text-xs font-extrabold">
-                  <Zap className="h-3.5 w-3.5" />
+                  <Zap className="h-3.5 w-3.5 text-emerald-600" />
                   <span>No Portal Needed</span>
                 </div>
               </div>
 
-              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#0B0F19]">
+              <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-[#090D16]">
                 Calculate from KCSE Grades
               </h2>
               <p className="mt-2.5 text-xs sm:text-sm text-[#64748B] leading-relaxed">
@@ -161,8 +157,8 @@ function StartPage() {
                   "Strict prerequisite validation warns you if you missed minimum subject gates.",
                 ].map((text, i) => (
                   <div key={i} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-[#0F52FF] shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm text-[#0B0F19] font-medium">{text}</span>
+                    <CheckCircle2 className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm text-[#090D16] font-medium">{text}</span>
                   </div>
                 ))}
               </div>
@@ -171,7 +167,9 @@ function StartPage() {
             <div className="mt-8 pt-6 border-t border-border">
               <div className="mb-4 flex items-center justify-between text-xs text-[#64748B] font-semibold">
                 <span>Setup: ~ 1 minute</span>
-                <span className="text-[#0F52FF] font-bold">Prerequisite Gating</span>
+                <span className="text-blue-600 font-bold flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5" /> Prerequisite Gating
+                </span>
               </div>
               <Link
                 to="/match"
@@ -186,15 +184,15 @@ function StartPage() {
         </div>
 
         {/* Trust & Privacy Card */}
-        <div className="mt-10 rounded-2xl edupath-card bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#64748B]">
+        <div className="mt-10 rounded-2xl edupath-card bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#64748B] shadow-subtle">
           <div className="flex items-center gap-2.5">
             <Lock className="h-4 w-4 text-emerald-600 shrink-0" />
             <span>
-              100% Private: Grades and screenshots are processed in-memory in your local session.
+              100% Private: Grades and screenshots are processed in-memory in your local browser session.
             </span>
           </div>
           <div className="flex items-center gap-1 text-[11px]">
-            <HelpCircle className="h-3.5 w-3.5 text-[#0F52FF]" />
+            <HelpCircle className="h-3.5 w-3.5 text-blue-600" />
             <span>Estimated cluster points serve as educational guidance.</span>
           </div>
         </div>

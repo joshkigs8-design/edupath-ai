@@ -4,12 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   ArrowLeft,
-  GraduationCap,
   Sparkles,
   Calculator,
-  Award,
-  CheckCircle2,
-  TrendingUp,
 } from "lucide-react";
 import { loadGrades } from "@/lib/edupath-store";
 import {
@@ -97,17 +93,12 @@ function ClusterPage() {
   if (!ready) return null;
 
   return (
-    <div className="min-h-screen pb-24 bg-[#FAFAFB] text-[#0B0F19] antialiased">
+    <div className="page-shell min-h-screen pb-24 bg-[#F8FAFC] text-[#090D16] antialiased">
       {/* Top Floating Capsule Navigation */}
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="capsule-navbar rounded-full px-5 py-3 flex items-center justify-between shadow-subtle">
-          <Link to="/" className="inline-flex items-center gap-2.5">
-            <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#0F52FF] text-white shadow-sm">
-              <GraduationCap className="h-4 w-4" />
-            </div>
-            <span className="font-display font-extrabold tracking-tight text-lg text-[#0B0F19]">
-              EduPath<span className="text-[#059669]">.AI</span>
-            </span>
+        <div className="capsule-navbar rounded-full px-5 py-3.5 flex items-center justify-between shadow-subtle">
+          <Link to="/" className="inline-flex items-center">
+            <EduPathLogo size="sm" />
           </Link>
           <Link
             to="/match"
@@ -121,20 +112,20 @@ function ClusterPage() {
       <div className="mx-auto max-w-7xl px-4">
         {/* Title Header */}
         <div className="mb-8 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs mb-3">
-            <Calculator className="h-3.5 w-3.5 text-[#0F52FF]" />
+          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs font-bold mb-3">
+            <Calculator className="h-3.5 w-3.5 text-blue-600" />
             <span>Step 3 of 3 · Mathematical Studio</span>
           </div>
-          {name && <p className="text-sm text-[#0F52FF] font-bold mb-1">Candidate: {name}</p>}
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#0B0F19]">
-            Your KCSE <span className="text-[#0F52FF]">Cluster Studio</span>
+          {name && <p className="text-sm text-blue-600 font-bold mb-1">Candidate: {name}</p>}
+          <h1 className="hero-title font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+            Your KCSE <span className="text-blue-600">Cluster Studio</span>
           </h1>
           <p className="mt-2.5 text-sm sm:text-base text-[#64748B] leading-relaxed">
             We evaluate your top 4 cluster subject points (
-            <span className="font-mono font-bold text-[#0B0F19]">r</span>) and best-7 KCSE aggregate
-            (<span className="font-mono font-bold text-[#0B0F19]">t</span>), then apply the official
+            <span className="font-mono font-bold text-[#090D16]">r</span>) and best-7 KCSE aggregate
+            (<span className="font-mono font-bold text-[#090D16]">t</span>), then apply the official
             KUCCPS geometric formula:{" "}
-            <span className="font-mono text-[#0F52FF] font-extrabold">
+            <span className="font-mono text-blue-600 font-extrabold">
               C = √((r/48) × (t/84)) × 48
             </span>
             .
@@ -160,60 +151,60 @@ function ClusterPage() {
             label="Sample Cluster (C)"
             value={sampleCluster.toFixed(2)}
             sub="using default top-4 as r"
-            orange
+            emerald
           />
         </div>
 
         {/* Visual Calculation Workflow Box */}
-        <div className="edupath-card bg-white p-6 sm:p-8 shadow-elevated mb-8">
+        <div className="edupath-card bg-white p-6 sm:p-8 shadow-card mb-8">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#64748B] mb-4">
-            <Calculator className="h-4 w-4 text-[#0F52FF]" />
+            <Calculator className="h-4 w-4 text-blue-600" />
             Official KUCCPS Formula Geometric Computation
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-            <div className="rounded-2xl border border-border bg-[#FAFAFB] p-4">
+            <div className="rounded-2xl border border-border bg-[#F8FAFC] p-4">
               <div className="text-[10px] uppercase font-bold text-[#64748B] mb-1">
                 Step 1 · Cluster Fraction
               </div>
-              <div className="font-mono text-sm font-bold text-[#0B0F19]">
+              <div className="font-mono text-sm font-bold text-[#090D16]">
                 r / 48 = {best4} / 48
               </div>
-              <div className="text-xs text-[#0F52FF] font-bold mt-1">
+              <div className="text-xs text-blue-600 font-bold mt-1">
                 = {(best4 / 48).toFixed(4)}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-[#FAFAFB] p-4">
+            <div className="rounded-2xl border border-border bg-[#F8FAFC] p-4">
               <div className="text-[10px] uppercase font-bold text-[#64748B] mb-1">
                 Step 2 · Total Fraction
               </div>
-              <div className="font-mono text-sm font-bold text-[#0B0F19]">
+              <div className="font-mono text-sm font-bold text-[#090D16]">
                 t / 84 = {best7} / 84
               </div>
-              <div className="text-xs text-[#0F52FF] font-bold mt-1">
+              <div className="text-xs text-blue-600 font-bold mt-1">
                 = {(best7 / 84).toFixed(4)}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border bg-[#FAFAFB] p-4">
+            <div className="rounded-2xl border border-border bg-[#F8FAFC] p-4">
               <div className="text-[10px] uppercase font-bold text-[#64748B] mb-1">
                 Step 3 · Geometric Mean
               </div>
-              <div className="font-mono text-xs font-bold text-[#0B0F19] truncate">
+              <div className="font-mono text-xs font-bold text-[#090D16] truncate">
                 √({(best4 / 48).toFixed(3)} × {(best7 / 84).toFixed(3)})
               </div>
-              <div className="text-xs text-[#0F52FF] font-bold mt-1">
+              <div className="text-xs text-blue-600 font-bold mt-1">
                 = {Math.sqrt((best4 / 48) * (best7 / 84)).toFixed(4)}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-[#0F52FF]/40 bg-[#EEF4FF] p-4">
-              <div className="text-[10px] uppercase font-bold text-[#0F52FF] mb-1">
+            <div className="rounded-2xl border border-blue-500/30 bg-blue-50 p-4">
+              <div className="text-[10px] uppercase font-bold text-blue-600 mb-1">
                 Step 4 · Scaled Cluster
               </div>
-              <div className="font-mono text-sm font-bold text-[#0B0F19]">× 48 Points</div>
-              <div className="font-display text-lg font-extrabold text-[#0F52FF] mt-0.5">
+              <div className="font-mono text-sm font-bold text-[#090D16]">× 48 Points</div>
+              <div className="font-display text-lg font-extrabold text-blue-600 mt-0.5">
                 = {sampleCluster.toFixed(2)} pts
               </div>
             </div>
@@ -222,7 +213,7 @@ function ClusterPage() {
           <p className="mt-4 text-xs text-[#64748B]">
             Note: While the sample cluster above uses your top 4 overall subjects, each specific
             degree programme uses its own 4 required cluster subjects to compute{" "}
-            <span className="font-mono font-bold text-[#0B0F19]">r</span>, giving you a custom score
+            <span className="font-mono font-bold text-[#090D16]">r</span>, giving you a custom score
             for every course.
           </p>
         </div>
@@ -230,10 +221,10 @@ function ClusterPage() {
         {/* Per-Subject Contribution Leaderboard & Next Step Card */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 items-start">
           {/* Leaderboard Table */}
-          <div className="edupath-card bg-white p-6 sm:p-8 shadow-subtle lg:col-span-8">
+          <div className="edupath-card bg-white p-6 sm:p-8 shadow-card lg:col-span-8">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="font-display text-xl font-bold text-[#0B0F19]">
+                <h2 className="font-display text-xl font-bold text-[#090D16]">
                   Subject Contribution Leaderboard
                 </h2>
                 <p className="text-xs text-[#64748B] mt-0.5">
@@ -241,7 +232,7 @@ function ClusterPage() {
                   subjects.
                 </p>
               </div>
-              <span className="rounded-full bg-[#EEF4FF] text-[#0F52FF] px-3 py-1 text-xs font-bold">
+              <span className="rounded-full bg-blue-50 text-blue-600 border border-blue-100 px-3 py-1 text-xs font-bold">
                 {entries.length} sat subjects
               </span>
             </div>
@@ -256,16 +247,16 @@ function ClusterPage() {
                       <span
                         className={`grid h-8 w-8 place-items-center rounded-xl text-xs font-extrabold shrink-0 ${
                           isTop4
-                            ? "bg-[#0F52FF] text-white shadow-sm"
+                            ? "bg-blue-600 text-white shadow-sm"
                             : isTop7
-                              ? "border border-border bg-[#FAFAFB] text-[#0B0F19]"
-                              : "border border-border/50 bg-[#FAFAFB] text-[#64748B]"
+                              ? "border border-border bg-[#F8FAFC] text-[#090D16]"
+                              : "border border-border/50 bg-[#F8FAFC] text-[#64748B]"
                         }`}
                       >
                         {idx + 1}
                       </span>
                       <div className="min-w-0">
-                        <div className="font-display font-bold text-sm text-[#0B0F19] truncate">
+                        <div className="font-display font-bold text-sm text-[#090D16] truncate">
                           {e.name}
                         </div>
                         <div className="text-[10px] font-mono uppercase tracking-wider text-[#64748B]">
@@ -276,17 +267,17 @@ function ClusterPage() {
 
                     <div className="flex items-center gap-4 shrink-0">
                       {/* Bar Visualization */}
-                      <div className="hidden sm:block w-28 h-2 rounded-full bg-[#FAFAFB] border border-border overflow-hidden">
+                      <div className="hidden sm:block w-28 h-2 rounded-full bg-[#F8FAFC] border border-border overflow-hidden">
                         <div
-                          className={`h-full ${isTop4 ? "bg-[#0F52FF]" : "bg-[#6B6B78]/40"}`}
+                          className={`h-full ${isTop4 ? "bg-blue-600" : "bg-slate-300"}`}
                           style={{ width: `${(e.points / 12) * 100}%` }}
                         />
                       </div>
 
-                      <span className="rounded-xl border border-border bg-[#FAFAFB] px-3 py-1 text-xs sm:text-sm font-extrabold text-[#0B0F19]">
+                      <span className="rounded-xl border border-border bg-[#F8FAFC] px-3 py-1 text-xs sm:text-sm font-extrabold text-[#090D16]">
                         {e.grade}
                       </span>
-                      <span className="w-8 text-right font-display text-base font-extrabold text-[#0B0F19]">
+                      <span className="w-8 text-right font-display text-base font-extrabold text-[#090D16]">
                         {e.points}
                       </span>
                     </div>
@@ -298,12 +289,12 @@ function ClusterPage() {
 
           {/* Right: Next Step CTA */}
           <aside className="lg:sticky lg:top-6 lg:h-fit lg:col-span-4">
-            <div className="edupath-card bg-white p-7 shadow-elevated space-y-5">
+            <div className="edupath-card bg-white p-7 shadow-card space-y-5">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#64748B]">
-                <Sparkles className="h-4 w-4 text-[#0F52FF]" /> Ready for matching
+                <Sparkles className="h-4 w-4 text-blue-600" /> Ready for matching
               </div>
 
-              <h3 className="font-display text-xl font-extrabold text-[#0B0F19]">
+              <h3 className="font-display text-xl font-extrabold text-[#090D16]">
                 Match Against 2,084 Programmes
               </h3>
 
@@ -339,22 +330,22 @@ function StatCard({
   value,
   sub,
   highlight,
-  orange,
+  emerald,
 }: {
   label: string;
   value: string;
   sub?: string;
   highlight?: boolean;
-  orange?: boolean;
+  emerald?: boolean;
 }) {
   return (
-    <div className="edupath-card bg-white rounded-3xl p-5 sm:p-6 shadow-subtle">
+    <div className="edupath-card bg-white rounded-3xl p-5 sm:p-6 shadow-subtle border border-border">
       <div className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-[#64748B] truncate">
         {label}
       </div>
       <div
         className={`mt-2 font-display text-3xl sm:text-4xl font-extrabold ${
-          orange ? "text-[#059669]" : highlight ? "text-[#0F52FF]" : "text-[#0B0F19]"
+          emerald ? "text-emerald-600" : highlight ? "text-blue-600" : "text-[#090D16]"
         }`}
       >
         {value}

@@ -7,7 +7,7 @@ export interface UserProfile {
   kcseIndex?: string;
   isUnlocked: boolean;
   unlockedAt?: string;
-  paymentMethod?: "mpesa" | "voucher" | "card";
+  paymentMethod?: "mpesa" | "voucher" | "card" | "paystack";
   voucherCode?: string;
 }
 
@@ -125,7 +125,7 @@ export function redeemVoucher(inputCode: string): { success: boolean; discountPe
 /**
  * Mark full pass as unlocked
  */
-export function unlockFullPass(method: "mpesa" | "voucher" | "card" = "mpesa", voucherCode?: string) {
+export function unlockFullPass(method: "mpesa" | "voucher" | "card" | "paystack" = "mpesa", voucherCode?: string) {
   try {
     localStorage.setItem("edupath_full_pass_unlocked", "true");
     localStorage.setItem(
@@ -135,6 +135,7 @@ export function unlockFullPass(method: "mpesa" | "voucher" | "card" = "mpesa", v
         method,
         voucherCode,
         amount: method === "voucher" ? 0 : 150,
+        billingInterval: method === "paystack" ? "monthly" : "one-time",
       })
     );
   } catch {

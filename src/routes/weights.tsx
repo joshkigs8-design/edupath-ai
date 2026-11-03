@@ -190,10 +190,10 @@ function WeightsPage() {
   if (!ready) return null;
 
   return (
-    <div className="min-h-screen pb-24 bg-[#FAFAFB] text-[#0B0F19] antialiased">
+    <div className="page-shell min-h-screen pb-24 bg-[#F8FAFC] text-[#090D16] antialiased">
       {/* Top Floating Capsule Navigation */}
       <div className="mx-auto max-w-6xl px-4 py-6">
-        <div className="capsule-navbar rounded-full px-5 py-3 flex items-center justify-between shadow-subtle border border-black/[0.08]">
+        <div className="capsule-navbar rounded-full px-5 py-3.5 flex items-center justify-between shadow-subtle border border-black/[0.08]">
           <Link to="/" className="flex items-center">
             <EduPathLogo size="sm" />
           </Link>
@@ -220,12 +220,12 @@ function WeightsPage() {
       <div className="mx-auto max-w-6xl px-4 pt-4 space-y-8">
         {/* Title Header */}
         <div className="text-center max-w-2xl mx-auto animate-fade-in">
-          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs mb-3">
-            <ShieldCheck className="h-3.5 w-3.5 text-[#0F52FF]" />
+          <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3.5 py-1 text-xs mb-3 font-bold">
+            <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
             <span>Step 2 of 3 · Official Weights Input</span>
           </div>
-          <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0B0F19]">
-            Enter Your <span className="text-[#0F52FF]">Cluster Weights</span>
+          <h1 className="hero-title font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Enter Your <span className="text-blue-600">Cluster Weights</span>
           </h1>
           <p className="mt-2.5 text-sm sm:text-base text-[#64748B] leading-relaxed">
             Copy the weights (0–48) shown in your KUCCPS Student Portal for each of the{" "}
@@ -238,13 +238,13 @@ function WeightsPage() {
           {/* Left Column: OCR Dropzone & 23 Tiles */}
           <div className="space-y-6 lg:col-span-8">
             {/* AI Vision OCR Workbench Card */}
-            <div className="edupath-card bg-white p-6 sm:p-8 shadow-elevated relative overflow-hidden">
+            <div className="edupath-card bg-white p-6 sm:p-8 shadow-card relative overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-[#EEF4FF] text-[#0F52FF] px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
-                    <Sparkles className="h-3 w-3" /> Gemini 3.6 Flash Vision OCR (Sub-Second AI)
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                    <Sparkles className="h-3 w-3 text-blue-600" /> Gemini 3.6 Flash Vision OCR
                   </div>
-                  <h2 className="mt-2 font-display text-xl sm:text-2xl font-extrabold text-[#0B0F19]">
+                  <h2 className="mt-2 font-display text-xl sm:text-2xl font-extrabold text-[#090D16]">
                     Upload Portal Screenshot
                   </h2>
                   <p className="mt-1 text-xs sm:text-sm text-[#64748B]">
@@ -255,9 +255,9 @@ function WeightsPage() {
                   <button
                     type="button"
                     onClick={handleAutoCalculateFromGrades}
-                    className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold bg-[#EEF4FF] text-[#0F52FF] hover:bg-[#dbe6fe] transition"
+                    className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200"
                   >
-                    <Zap className="h-3.5 w-3.5" />
+                    <Zap className="h-3.5 w-3.5 text-blue-600" />
                     <span>Auto-Calculate from My Grades</span>
                   </button>
                 </div>
@@ -278,9 +278,9 @@ function WeightsPage() {
               {/* Upload Trigger Area */}
               <div
                 onClick={() => fileRef.current?.click()}
-                className="rounded-2xl border-2 border-dashed border-border hover:border-[#0F52FF]/60 bg-[#FAFAFB] hover:bg-white p-6 sm:p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
+                className="rounded-2xl border-2 border-dashed border-border hover:border-blue-500/60 bg-[#F8FAFC] hover:bg-white p-6 sm:p-8 text-center cursor-pointer transition flex flex-col items-center justify-center gap-3 group"
               >
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#0F52FF] text-white shadow-blue group-hover:scale-105 transition">
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-blue group-hover:scale-105 transition">
                   {ocrState === "loading" ? (
                     <Loader2 className="h-6 w-6 animate-spin" />
                   ) : (
@@ -288,7 +288,7 @@ function WeightsPage() {
                   )}
                 </div>
                 <div>
-                  <div className="font-display font-bold text-sm sm:text-base text-[#0B0F19]">
+                  <div className="font-display font-bold text-sm sm:text-base text-[#090D16]">
                     {ocrState === "loading"
                       ? "Google Gemini Vision is analyzing your screenshot table…"
                       : previewUrl
@@ -318,7 +318,7 @@ function WeightsPage() {
 
               {/* Live Preview & Progress Bar */}
               {previewUrl && (
-                <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-[#FAFAFB] p-4">
+                <div className="mt-6 flex items-center gap-4 rounded-2xl border border-border bg-[#F8FAFC] p-4">
                   <div
                     className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-border bg-white ${
                       ocrState === "loading" ? "animate-pulse" : ""
@@ -333,7 +333,7 @@ function WeightsPage() {
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#64748B]">
                       <span>{ocrState === "loading" ? "Google Gemini Vision Processing…" : "OCR Extraction Status"}</span>
-                      <span className="text-[#0F52FF] font-mono font-bold">
+                      <span className="text-blue-600 font-mono font-bold">
                         {ocrState === "loading"
                           ? "Analyzing"
                           : `${ocrFilledCount}/${CLUSTER_COUNT}`}
@@ -341,7 +341,7 @@ function WeightsPage() {
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                       <div
-                        className="h-full bg-[#0F52FF] transition-[width] duration-300 ease-out"
+                        className="h-full bg-blue-600 transition-[width] duration-300 ease-out"
                         style={{
                           width: `${
                             ocrState === "loading"
@@ -362,7 +362,7 @@ function WeightsPage() {
             </div>
 
             {/* Candidate Name Card */}
-            <div className="edupath-card bg-white p-6 shadow-subtle">
+            <div className="edupath-card bg-white p-6 shadow-subtle border border-border">
               <label className="block text-xs font-bold uppercase tracking-wider text-[#64748B] mb-1.5">
                 Candidate Name (Optional)
               </label>
@@ -371,22 +371,22 @@ function WeightsPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. John Kamau"
-                className="w-full rounded-xl border border-border bg-[#FAFAFB] px-4 py-3 text-sm sm:text-base font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20 transition"
+                className="w-full rounded-xl border border-border bg-[#F8FAFC] px-4 py-3 text-sm sm:text-base font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition"
               />
             </div>
 
             {/* 23 Cluster Tiles Input Grid */}
-            <div className="edupath-card bg-white p-6 sm:p-8 shadow-elevated space-y-6">
+            <div className="edupath-card bg-white p-6 sm:p-8 shadow-card space-y-6">
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
-                  <h3 className="font-display text-lg font-bold text-[#0B0F19]">
+                  <h3 className="font-display text-lg font-bold text-[#090D16]">
                     All {CLUSTER_COUNT} Cluster Values
                   </h3>
                   <p className="text-xs text-[#64748B]">
                     Type directly or verify auto-filled numbers (0.000 to 48.000).
                   </p>
                 </div>
-                <span className="rounded-full bg-[#EEF4FF] text-[#0F52FF] px-3 py-1 text-xs font-bold">
+                <span className="rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1 text-xs font-bold">
                   {filled}/{CLUSTER_COUNT} Entered
                 </span>
               </div>
@@ -403,16 +403,16 @@ function WeightsPage() {
                       key={`${c}-${pulseKey}`}
                       className={`rounded-2xl border p-3.5 transition-all ${
                         isFlash
-                          ? "border-[#0F52FF] bg-[#EEF4FF] ring-2 ring-[#0F52FF]/30 scale-[1.02]"
+                          ? "border-blue-600 bg-blue-50 ring-2 ring-blue-600/30 scale-[1.02]"
                           : isBest
                             ? "border-emerald-500/50 bg-emerald-50/40"
                             : hasVal
-                              ? "border-border bg-[#FAFAFB]"
+                              ? "border-border bg-[#F8FAFC]"
                               : "border-border/60 bg-white"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-1 mb-1.5">
-                        <span className="text-[11px] font-bold text-[#0B0F19]">
+                        <span className="text-[11px] font-bold text-[#090D16]">
                           Cluster {c}
                         </span>
                         {isBest && (
@@ -429,7 +429,7 @@ function WeightsPage() {
                         placeholder="0.000"
                         value={val == null ? "" : val}
                         onChange={(e) => set(c, e.target.value)}
-                        className="w-full font-mono text-sm sm:text-base font-bold bg-white rounded-xl border border-border px-3 py-1.5 outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                        className="w-full font-mono text-sm sm:text-base font-bold bg-white rounded-xl border border-border px-3 py-1.5 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                       />
                     </div>
                   );
@@ -440,18 +440,18 @@ function WeightsPage() {
 
           {/* Right Column: Sticky Summary & Action */}
           <aside className="lg:sticky lg:top-6 lg:h-fit lg:col-span-4 space-y-6">
-            <div className="edupath-card bg-white p-6 sm:p-8 shadow-elevated space-y-5">
+            <div className="edupath-card bg-white p-6 sm:p-8 shadow-card space-y-5">
               <div className="flex items-center gap-2 border-b border-border pb-3">
-                <Sparkles className="h-4 w-4 text-[#0F52FF]" />
-                <h3 className="font-display text-base font-bold text-[#0B0F19]">
+                <Sparkles className="h-4 w-4 text-blue-600" />
+                <h3 className="font-display text-base font-bold text-[#090D16]">
                   Weights Summary
                 </h3>
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FAFAFB] border border-border">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] border border-border">
                   <span className="text-[#64748B]">Clusters Completed</span>
-                  <span className="font-mono font-extrabold text-[#0B0F19]">
+                  <span className="font-mono font-extrabold text-[#090D16]">
                     {filled} of {CLUSTER_COUNT}
                   </span>
                 </div>
@@ -482,7 +482,7 @@ function WeightsPage() {
               </button>
 
               <div className="text-center text-[10px] text-[#64748B]">
-                Matches against 2,084+ degree programmes in the Supabase database.
+                Matches against 2,084+ degree programmes in the official database.
               </div>
             </div>
           </aside>

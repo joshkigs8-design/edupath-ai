@@ -1,14 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
 import { EduPathLogo } from "../components/EduPathLogo";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import {
   ShieldCheck,
   Lock,
   Mail,
   User,
   KeyRound,
-  CheckCircle2,
   AlertCircle,
+  CheckCircle2,
   GraduationCap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +20,8 @@ export const Route = createFileRoute("/auth")({
       { title: "Candidate Account — Sign In & Sign Up — EduPath AI" },
       {
         name: "description",
-        content: "Sign in or create your EduPath AI candidate account to match KCSE grades and access degree admissions.",
+        content:
+          "Sign in or create your EduPath AI candidate account to match KCSE grades and access degree admissions.",
       },
       { property: "og:title", content: "EduPath AI Candidate Portal" },
     ],
@@ -32,7 +33,11 @@ type AuthMode = "signin" | "signup" | "forgot";
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<AuthMode>("signin");
+  const search = useSearch({ from: "/auth" }) as { mode?: string };
+  const initialMode: AuthMode =
+    search.mode === "signup" ? "signup" : search.mode === "forgot" ? "forgot" : "signin";
+
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -40,19 +45,9 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    // Read URL search params (e.g. /auth?mode=signup)
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const urlMode = params.get("mode");
-      if (urlMode === "signup" || urlMode === "signin" || urlMode === "forgot") {
-        setMode(urlMode);
-      }
-    }
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setCurrentUser(session.user);
@@ -69,9 +64,9 @@ function AuthPage() {
   }, []);
 
   const proceedToMatching = () => {
-    const loaded = loadGrades();
-    if (loaded.grades && Object.keys(loaded.grades).length > 0) {
-      navigate({ to: "/results" });
+    const gradesData = loadGrades();
+    if (Object.keys(gradesData.grades).length >= 7) {
+      navigate({ to: "/cluster" });
     } else {
       navigate({ to: "/start" });
     }
@@ -89,15 +84,15 @@ function AuthPage() {
         password,
       });
 
-      if (error) {
-        throw error;
+      if (error) throw error;
+      if (data.user) {
+        setSuccessMsg("Signed in successfully! Redirecting…");
+        setTimeout(() => {
+          proceedToMatching();
+        }, 800);
       }
-
-      setSuccessMsg("Welcome back! Loading your candidate cockpit…");
-      setCurrentUser(data.user);
-      setTimeout(() => proceedToMatching(), 800);
     } catch (err: any) {
-      setErrorMsg(err.message || "Could not sign in. Please check your credentials.");
+      setErrorMsg(err.message || "Failed to sign in. Please verify your email and password.");
     } finally {
       setLoading(false);
     }
@@ -123,17 +118,16 @@ function AuthPage() {
 
       if (error) throw error;
 
-      if (data?.session) {
-        setSuccessMsg("Account created! Launching course matching…");
-        setCurrentUser(data.user);
-        setTimeout(() => proceedToMatching(), 800);
-      } else if (data?.user) {
-        setSuccessMsg("Account registered! Signing you in to course matching…");
-        setCurrentUser(data.user);
-        setTimeout(() => proceedToMatching(), 1000);
+      if (data.session) {
+        setSuccessMsg("Account created! Redirecting to course matching…");
+        setTimeout(() => {
+          proceedToMatching();
+        }, 800);
+      } else {
+        setSuccessMsg("Account created! Please check your email inbox to confirm your account.");
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Could not create account. Please try again.");
+      setErrorMsg(err.message || "Could not register candidate account.");
     } finally {
       setLoading(false);
     }
@@ -147,12 +141,11 @@ function AuthPage() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: window.location.origin + "/auth",
+        redirectTo: `${window.location.origin}/auth?mode=reset`,
       });
-
       if (error) throw error;
       setSuccessMsg("Password reset instructions have been sent to your email.");
-    } catch (err: any) {
+    } catch {
       setSuccessMsg("If an account exists for this email, password reset instructions have been sent.");
     } finally {
       setLoading(false);
@@ -166,10 +159,10 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFB] text-[#0B0F19] antialiased pb-24">
+    <div className="page-shell min-h-screen bg-[#F8FAFC] text-[#090D16] antialiased pb-24">
       {/* Top Capsule Nav */}
       <div className="mx-auto max-w-5xl px-4 py-6">
-        <div className="capsule-navbar rounded-full px-5 py-3 flex items-center justify-between shadow-subtle border border-black/[0.08]">
+        <div className="capsule-navbar rounded-full px-5 py-3.5 flex items-center justify-between shadow-subtle border border-black/[0.08]">
           <Link to="/" className="flex items-center">
             <EduPathLogo size="sm" />
           </Link>
@@ -187,14 +180,14 @@ function AuthPage() {
       <div className="mx-auto max-w-md px-4 pt-4 space-y-6">
         {/* User Status Card if already logged in */}
         {currentUser && (
-          <div className="edupath-card bg-white p-6 shadow-elevated rounded-3xl space-y-5 border border-border">
+          <div className="edupath-card bg-white p-6 shadow-card rounded-3xl space-y-5 border border-border">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="h-10 w-10 rounded-2xl bg-[#EEF4FF] text-[#0F52FF] grid place-items-center font-bold">
+                <div className="h-10 w-10 rounded-2xl bg-blue-50 text-blue-600 grid place-items-center font-bold border border-blue-100">
                   <User className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="font-display font-bold text-sm text-[#0B0F19]">
+                  <div className="font-display font-bold text-sm text-[#090D16]">
                     {currentUser.user_metadata?.full_name || currentUser.email}
                   </div>
                   <div className="text-[11px] text-[#64748B]">{currentUser.email}</div>
@@ -208,8 +201,8 @@ function AuthPage() {
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#EEF4FF] border border-[#0F52FF]/20 space-y-1 text-center">
-              <div className="text-xs font-bold text-[#0F52FF]">
+            <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200/60 space-y-1 text-center">
+              <div className="text-xs font-bold text-blue-700">
                 ✓ Candidate Account Active & Synchronized
               </div>
               <p className="text-[11px] text-[#64748B]">
@@ -229,14 +222,14 @@ function AuthPage() {
 
         {/* Main Auth Form Container */}
         {!currentUser && (
-          <div className="edupath-card bg-white p-6 sm:p-8 shadow-elevated rounded-3xl space-y-6 border border-border animate-fade-in">
+          <div className="edupath-card bg-white p-6 sm:p-8 shadow-card rounded-3xl space-y-6 border border-border animate-fade-in">
             {/* Header / Tabs */}
             <div className="text-center space-y-2">
               <div className="inline-flex items-center gap-1.5 rounded-full badge-blue px-3 py-1 text-xs font-bold">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#0F52FF]" />
+                <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
                 <span>Candidate Portal</span>
               </div>
-              <h1 className="font-display text-2xl font-extrabold text-[#0B0F19]">
+              <h1 className="hero-title font-display text-2xl font-extrabold">
                 {mode === "signin"
                   ? "Sign In to Your Account"
                   : mode === "signup"
@@ -253,7 +246,7 @@ function AuthPage() {
             </div>
 
             {/* Toggle Modes */}
-            <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#FAFAFB] border border-border text-xs font-bold">
+            <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#F8FAFC] border border-border text-xs font-bold">
               <button
                 type="button"
                 onClick={() => {
@@ -263,8 +256,8 @@ function AuthPage() {
                 }}
                 className={`py-2 rounded-xl transition ${
                   mode === "signin"
-                    ? "bg-[#0F52FF] text-white shadow-sm"
-                    : "text-[#64748B] hover:text-[#0B0F19]"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-[#64748B] hover:text-[#090D16]"
                 }`}
               >
                 Sign In
@@ -278,8 +271,8 @@ function AuthPage() {
                 }}
                 className={`py-2 rounded-xl transition ${
                   mode === "signup"
-                    ? "bg-[#0F52FF] text-white shadow-sm"
-                    : "text-[#64748B] hover:text-[#0B0F19]"
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-[#64748B] hover:text-[#090D16]"
                 }`}
               >
                 Create Account
@@ -315,7 +308,7 @@ function AuthPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. candidate@gmail.com"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -328,7 +321,7 @@ function AuthPage() {
                     <button
                       type="button"
                       onClick={() => setMode("forgot")}
-                      className="text-[11px] font-bold text-[#0F52FF] hover:underline"
+                      className="text-[11px] font-bold text-blue-600 hover:underline"
                     >
                       Forgot password?
                     </button>
@@ -341,7 +334,7 @@ function AuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -370,7 +363,7 @@ function AuthPage() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="e.g. Faith Wanjiku"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -387,7 +380,7 @@ function AuthPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. faith@gmail.com"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -403,7 +396,7 @@ function AuthPage() {
                       value={kcseIndex}
                       onChange={(e) => setKcseIndex(e.target.value)}
                       placeholder="e.g. 11200001001"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -421,7 +414,7 @@ function AuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -450,7 +443,7 @@ function AuthPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. candidate@gmail.com"
-                      className="w-full rounded-xl border border-border bg-[#FAFAFB] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-[#0F52FF] focus:ring-2 focus:ring-[#0F52FF]/20"
+                      className="w-full rounded-xl border border-border bg-[#F8FAFC] pl-10 pr-4 py-2.5 text-xs sm:text-sm font-semibold outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20"
                     />
                   </div>
                 </div>
@@ -466,7 +459,7 @@ function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setMode("signin")}
-                  className="w-full text-center text-xs font-bold text-[#64748B] hover:text-[#0B0F19] pt-2"
+                  className="w-full text-center text-xs font-bold text-[#64748B] hover:text-[#090D16] pt-2"
                 >
                   ← Back to Sign In
                 </button>
@@ -476,7 +469,7 @@ function AuthPage() {
             <div className="pt-2 text-center border-t border-border">
               <Link
                 to="/start"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F52FF] hover:underline"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline"
               >
                 <span>⚡ Continue as Guest (No Account Required) →</span>
               </Link>

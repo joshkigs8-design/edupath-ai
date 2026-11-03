@@ -21,13 +21,16 @@ import {
   loadGrades,
   loadMode,
   loadWeights,
-  loadActiveWeight,
-  saveActiveWeight,
-  CLUSTER_COUNT,
   type ClusterWeights,
   type MatchMode,
 } from "@/lib/edupath-store";
-import { meanPoints, calculateAll23Clusters, getProgrammeCluster, bestFour, bestSeven, weightedCluster, type Programme, type MatchResult } from "@/lib/kcse";
+import {
+  calculateAll23Clusters,
+  getProgrammeCluster,
+  bestSeven,
+  type Programme,
+  type MatchResult,
+} from "@/lib/kcse";
 import { downloadReport } from "@/lib/edupath-pdf";
 
 export const Route = createFileRoute("/results")({
@@ -52,20 +55,11 @@ export const Route = createFileRoute("/results")({
 type ChanceFilter = "all" | "high" | "moderate" | "competitive";
 type SortOption = "cutoff-desc" | "cutoff-asc" | "name-asc" | "uni-asc";
 
-function chanceFromDelta(cluster: number | null, cutoff: number | null): MatchResult["chance"] {
-  if (cluster == null || cutoff == null) return "moderate";
-  if (cluster >= cutoff + 3) return "high";
-  if (cluster >= cutoff) return "moderate";
-  if (cluster >= cutoff - 2) return "competitive";
-  return "unlikely";
-}
-
 function ResultsPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<MatchMode>("estimate");
   const [grades, setGrades] = useState<Record<string, string>>({});
   const [weights, setWeights] = useState<ClusterWeights>({});
-  const [activeCluster, setActiveCluster] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [ready, setReady] = useState(false);
   const [query, setQuery] = useState("");
@@ -94,89 +88,80 @@ function ResultsPage() {
       try {
         localStorage.setItem("edupath_saved_programmes", JSON.stringify(Array.from(next)));
       } catch {
-        // storage ignored
+        // ignore
       }
       return next;
     });
   };
 
   useEffect(() => {
-    const m = loadMode() ?? "estimate";
+    const m = loadMode();
     setMode(m);
     if (m === "official") {
       const w = loadWeights();
-      if (!Object.keys(w.weights || {}).length) {
-        navigate({ to: "/weights" });
-        return;
-      }
       setWeights(w.weights);
-      setName(w.name || "");
-      const savedCluster = loadActiveWeight();
-      setActiveCluster(savedCluster ?? Object.keys(w.weights).map(Number)[0] ?? null);
+      setName(w.name);
     } else {
-      const loaded = loadGrades();
-      let activeGrades = loaded.grades;
-      if (!activeGrades || Object.keys(activeGrades).length === 0) {
-        activeGrades = {};
-      }
-      setGrades(activeGrades);
-      setName(loaded.name || "");
+      const g = loadGrades();
+      setGrades(g.grades);
+      setName(g.name);
     }
     setReady(true);
-  }, [navigate]);
+  }, []);
 
   const { data: programmes = [], isLoading } = useQuery<Programme[]>({
-    queryKey: ["programmes"],
+    queryKey: ["all_programmes_for_matching"],
     queryFn: async () => {
-      // Fetch all programmes from Supabase database in parallel chunks
-      const [res1, res2, res3] = await Promise.all([
-        supabase
-          .from("programmes")
-          .select(`id, code, name, category, cutoff_2023, cutoff_2022, requirements, university:universities ( id, name, short_name, is_private, county, logo_url )`)
-          .order("name", { ascending: true })
-          .range(0, 999),
-        supabase
-          .from("programmes")
-          .select(`id, code, name, category, cutoff_2023, cutoff_2022, requirements, university:universities ( id, name, short_name, is_private, county, logo_url )`)
-          .order("name", { ascending: true })
-          .range(1000, 1999),
-        supabase
-          .from("programmes")
-          .select(`id, code, name, category, cutoff_2023, cutoff_2022, requirements, university:universities ( id, name, short_name, is_private, county, logo_url )`)
-          .order("name", { ascending: true })
-          .range(2000, 2999),
-      ]);
+      const PAGE_SIZE = 1000;
+      let all: Programme[] = [];
+      let from = 0;
+      let hasMore = true;
 
-      const all = [
-        ...(res1.data || []),
-        ...(res2.data || []),
-        ...(res3.data || []),
-      ];
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from("programmes")
+          .select("*, university:universities(*)")
+          .range(from, from + PAGE_SIZE - 1);
 
-      return (all as unknown as Programme[]) ?? [];
+        if (error) {
+          console.error("Error fetching programmes:", error);
+          break;
+        }
+
+        if (data && data.length > 0) {
+          all = all.concat(data as Programme[]);
+          from += PAGE_SIZE;
+          if (data.length < PAGE_SIZE) hasMore = false;
+        } else {
+          hasMore = false;
+        }
+      }
+
+      return all;
     },
     staleTime: 1000 * 60 * 30,
   });
 
-  const matches: MatchResult[] = useMemo(() => {
+  const matches = useMemo<MatchResult[]>(() => {
     if (!ready || programmes.length === 0) return [];
 
-    const validSubjectGrades = Object.fromEntries(
-      Object.entries(grades).filter(([k]) => k !== "_meta_candidate_name")
-    );
-
-    if (mode !== "official" && Object.keys(validSubjectGrades).length === 0) {
-      return [];
+    const validSubjectGrades: Record<string, string> = {};
+    for (const [k, v] of Object.entries(grades)) {
+      if (!k.startsWith("_meta_") && typeof v === "string") {
+        validSubjectGrades[k] = v;
+      }
     }
 
-    // Calculate all 23 clusters for the candidate
-    const calculatedClusters = calculateAll23Clusters(validSubjectGrades);
-    const fallbackCluster = weightedCluster(bestFour(validSubjectGrades), bestSeven(validSubjectGrades));
+    const calculatedClusters = calculateAll23Clusters(validSubjectGrades as any);
+    const fallbackCluster =
+      Object.values(calculatedClusters).length > 0
+        ? Math.max(...Object.values(calculatedClusters).filter((v): v is number => typeof v === "number"))
+        : 35.0;
 
     return programmes.map((p) => {
-      const clusterNo = getProgrammeCluster(p);
+      const clusterNo = getProgrammeCluster(p.name, p.code ?? undefined);
+      let userPoints: number | null = null;
 
-      let userPoints = 0;
       if (mode === "official") {
         userPoints = weights[clusterNo] ?? calculatedClusters[clusterNo] ?? fallbackCluster;
       } else {
@@ -198,20 +183,22 @@ function ResultsPage() {
               ? "competitive"
               : "unlikely";
 
-      const meetsRequirements = !p.requirements?.length || p.requirements.every((req: any) => {
-        if (!req || !req.subject || !req.grade) return true;
-        const candidateGrade = validSubjectGrades[req.subject];
-        if (!candidateGrade) return false;
-        const GRADE_ORDER = ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E'];
-        return GRADE_ORDER.indexOf(candidateGrade) <= GRADE_ORDER.indexOf(req.grade);
-      });
+      const meetsRequirements =
+        !p.requirements?.length ||
+        p.requirements.every((req: any) => {
+          if (!req || !req.subject || !req.grade) return true;
+          const candidateGrade = validSubjectGrades[req.subject];
+          if (!candidateGrade) return false;
+          const GRADE_ORDER = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E"];
+          return GRADE_ORDER.indexOf(candidateGrade) <= GRADE_ORDER.indexOf(req.grade);
+        });
       const qualified = meetsRequirements && userPoints > 0;
 
       return {
         programme: p,
-        clusterPoints: +(userPoints.toFixed(3)),
-        rawClusterSum: +(userPoints.toFixed(3)),
-        bestSevenTotal: bestSeven(validSubjectGrades),
+        clusterPoints: +userPoints.toFixed(3),
+        rawClusterSum: +userPoints.toFixed(3),
+        bestSevenTotal: bestSeven(validSubjectGrades as any),
         meetsRequirements,
         qualified,
         delta,
@@ -220,7 +207,7 @@ function ResultsPage() {
         failedSubjects: [],
       };
     });
-  }, [ready, programmes, mode, weights, grades, activeCluster]);
+  }, [ready, programmes, mode, weights, grades]);
 
   const filtered = useMemo(() => {
     return matches
@@ -243,21 +230,17 @@ function ResultsPage() {
       })
       .sort((a, b) => {
         if (sortOption === "cutoff-desc") {
-          const cutA = a.programme.cutoff_2023 ?? 0;
-          const cutB = b.programme.cutoff_2023 ?? 0;
-          return cutB - cutA;
+          return (b.programme.cutoff_2023 ?? 0) - (a.programme.cutoff_2023 ?? 0);
         }
         if (sortOption === "cutoff-asc") {
-          const cutA = a.programme.cutoff_2023 ?? 999;
-          const cutB = b.programme.cutoff_2023 ?? 999;
-          return cutA - cutB;
+          return (a.programme.cutoff_2023 ?? 0) - (b.programme.cutoff_2023 ?? 0);
         }
         if (sortOption === "name-asc") {
           return a.programme.name.localeCompare(b.programme.name);
         }
         if (sortOption === "uni-asc") {
           return (a.programme.university?.name ?? "").localeCompare(
-            b.programme.university?.name ?? ""
+            b.programme.university?.name ?? "",
           );
         }
         return 0;
@@ -290,10 +273,10 @@ function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFB] text-[#0B0F19] antialiased pb-24">
+    <div className="page-shell min-h-screen bg-[#F8FAFC] text-[#090D16] antialiased pb-24">
       {/* Top Floating Capsule Navigation */}
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="capsule-navbar rounded-full px-5 py-3 flex items-center justify-between shadow-subtle border border-black/[0.08]">
+        <div className="capsule-navbar rounded-full px-5 py-3.5 flex items-center justify-between shadow-subtle border border-black/[0.08]">
           <Link to="/" className="flex items-center">
             <EduPathLogo size="sm" />
           </Link>
@@ -320,15 +303,15 @@ function ResultsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full badge-blue px-3 py-1 text-xs font-bold mb-2">
-              <Sparkles className="h-3.5 w-3.5 text-[#0F52FF]" />
+              <Sparkles className="h-3.5 w-3.5 text-blue-600" />
               <span>
                 {mode === "official"
                   ? "Official KUCCPS Weighted Placement"
                   : "KCSE Grade Match Intelligence"}
               </span>
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-[#0B0F19]">
-              Your Course <span className="text-[#0F52FF]">Matches</span>
+            <h1 className="hero-title font-display text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Your Course <span className="text-blue-600">Matches</span>
             </h1>
             <p className="text-xs sm:text-sm text-[#64748B] mt-1">
               {name ? `Candidate: ${name} · ` : ""}
@@ -357,21 +340,17 @@ function ResultsPage() {
           />
           <StatCard icon={Building2} label="Universities Matched" value={stats.unis} />
           <StatCard icon={Target} label="High Chance Options" value={stats.high} />
-          <StatCard
-            icon={TrendingUp}
-            label="Competitive Horizons"
-            value={stats.competitive}
-          />
+          <StatCard icon={TrendingUp} label="Competitive Horizons" value={stats.competitive} />
         </div>
 
         {/* Filter Sidebar + Results List */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
           {/* Left Sidebar Filters */}
           <aside className="lg:sticky lg:top-6 lg:h-fit lg:col-span-4 space-y-6">
-            <div className="edupath-card bg-white p-6 shadow-subtle space-y-5">
+            <div className="edupath-card bg-white p-6 shadow-card space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-border">
-                <div className="flex items-center gap-2 text-sm font-bold text-[#0B0F19]">
-                  <SlidersHorizontal className="h-4 w-4 text-[#0F52FF]" /> Filter & Sort
+                <div className="flex items-center gap-2 text-sm font-bold text-[#090D16]">
+                  <SlidersHorizontal className="h-4 w-4 text-blue-600" /> Filter & Sort
                 </div>
                 {(chanceFilter !== "all" ||
                   uniFilter !== "all" ||
@@ -388,7 +367,7 @@ function ResultsPage() {
                       setQuery("");
                       setSortOption("cutoff-desc");
                     }}
-                    className="text-xs text-[#0F52FF] font-bold hover:underline"
+                    className="text-xs text-blue-600 font-bold hover:underline"
                   >
                     Reset all
                   </button>
@@ -396,17 +375,17 @@ function ResultsPage() {
               </div>
 
               {/* Saved Filter Pill */}
-              <div className="p-3 rounded-2xl bg-[#FAFAFB] border border-border flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#0B0F19]">
-                  <Bookmark className="h-4 w-4 text-[#0F52FF]" />
+              <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-border flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#090D16]">
+                  <Bookmark className="h-4 w-4 text-blue-600" />
                   <span>Saved Options ({savedIds.size})</span>
                 </div>
                 <button
                   onClick={() => setShowSavedOnly(!showSavedOnly)}
                   className={`px-3 py-1 text-xs font-bold rounded-xl transition ${
                     showSavedOnly
-                      ? "bg-[#0F52FF] text-white shadow-sm"
-                      : "bg-white border border-border text-[#64748B] hover:text-[#0B0F19]"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-white border border-border text-[#64748B] hover:text-[#090D16]"
                   }`}
                 >
                   {showSavedOnly ? "Active" : "View"}
@@ -430,8 +409,8 @@ function ResultsPage() {
                       onClick={() => setChanceFilter(c.key as ChanceFilter)}
                       className={`rounded-xl py-2 px-3 text-xs font-bold transition text-center ${
                         chanceFilter === c.key
-                          ? "bg-[#0F52FF] text-white shadow-sm"
-                          : "bg-[#FAFAFB] border border-border text-[#0B0F19] hover:bg-white"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "bg-[#F8FAFC] border border-border text-[#090D16] hover:bg-white"
                       }`}
                     >
                       {c.label}
@@ -456,8 +435,8 @@ function ResultsPage() {
                       onClick={() => setTypeFilter(t.key as "all" | "public" | "private")}
                       className={`rounded-xl py-1.5 px-2 text-xs font-bold transition text-center ${
                         typeFilter === t.key
-                          ? "bg-[#0F52FF] text-white"
-                          : "bg-[#FAFAFB] border border-border text-[#64748B] hover:bg-white"
+                          ? "bg-blue-600 text-white"
+                          : "bg-[#F8FAFC] border border-border text-[#64748B] hover:bg-white"
                       }`}
                     >
                       {t.label}
@@ -474,7 +453,7 @@ function ResultsPage() {
                 <select
                   value={uniFilter}
                   onChange={(e) => setUniFilter(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-[#FAFAFB] px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F52FF]/20"
+                  className="w-full rounded-xl border border-border bg-[#F8FAFC] px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                 >
                   <option value="all">All Universities ({universities.length})</option>
                   {universities.map((u) => (
@@ -493,7 +472,7 @@ function ResultsPage() {
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as SortOption)}
-                  className="w-full rounded-xl border border-border bg-[#FAFAFB] px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F52FF]/20"
+                  className="w-full rounded-xl border border-border bg-[#F8FAFC] px-3 py-2.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20"
                 >
                   <option value="cutoff-desc">Highest Cut-off First</option>
                   <option value="cutoff-asc">Lowest Cut-off First</option>
@@ -507,18 +486,18 @@ function ResultsPage() {
           {/* Right Main Results List */}
           <div className="space-y-4 lg:col-span-8">
             {/* Search Input Bar */}
-            <div className="edupath-card bg-white sticky top-4 z-10 p-3 shadow-subtle flex items-center gap-2">
+            <div className="edupath-card bg-white sticky top-4 z-10 p-3 shadow-card flex items-center gap-2">
               <Search className="ml-2 h-4 w-4 text-[#64748B] shrink-0" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search programme name, university, or course code…"
-                className="flex-1 bg-transparent px-2 py-1 text-sm font-medium outline-none text-[#0B0F19] placeholder:text-[#64748B]"
+                className="flex-1 bg-transparent px-2 py-1 text-sm font-medium outline-none text-[#090D16] placeholder:text-[#64748B]"
               />
               {query && (
                 <button
                   onClick={() => setQuery("")}
-                  className="rounded-lg p-1 text-[#64748B] hover:text-[#0B0F19] hover:bg-slate-100"
+                  className="rounded-lg p-1 text-[#64748B] hover:text-[#090D16] hover:bg-slate-100"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -532,10 +511,11 @@ function ResultsPage() {
                   <div key={i} className="h-28 animate-pulse rounded-3xl edupath-card bg-white" />
                 ))}
               </div>
-            ) : mode !== "official" && Object.keys(grades).filter((k) => k !== "_meta_candidate_name").length === 0 ? (
-              <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle">
+            ) : mode !== "official" &&
+              Object.keys(grades).filter((k) => k !== "_meta_candidate_name").length === 0 ? (
+              <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle border border-border">
                 <AlertCircle className="mx-auto h-10 w-10 text-[#64748B] mb-3" />
-                <h3 className="font-display font-bold text-lg text-[#0B0F19]">
+                <h3 className="font-display font-bold text-lg text-[#090D16]">
                   No grades entered
                 </h3>
                 <p className="mt-1 text-xs text-[#64748B] max-w-md mx-auto">
@@ -549,14 +529,13 @@ function ResultsPage() {
                 </Link>
               </div>
             ) : filtered.length === 0 ? (
-              <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle">
+              <div className="edupath-card bg-white rounded-3xl p-12 text-center shadow-subtle border border-border">
                 <AlertCircle className="mx-auto h-10 w-10 text-[#64748B] mb-3" />
-                <h3 className="font-display font-bold text-lg text-[#0B0F19]">
+                <h3 className="font-display font-bold text-lg text-[#090D16]">
                   No courses match your criteria
                 </h3>
                 <p className="mt-1 text-xs text-[#64748B] max-w-md mx-auto">
-                  Try adjusting your search query, clearing filters, or switching between cluster
-                  weights.
+                  Try adjusting your search query, clearing filters, or switching between cluster weights.
                 </p>
                 <button
                   onClick={() => {
@@ -589,7 +568,6 @@ function ResultsPage() {
                   >
                     <ProgrammeCard
                       match={m}
-                      mode={mode}
                       isSaved={savedIds.has(m.programme.id)}
                       onToggleSave={(e) => toggleSave(m.programme.id, e)}
                     />
@@ -611,7 +589,6 @@ function ResultsPage() {
       {selected && (
         <DetailDrawer
           match={selected}
-          mode={mode}
           isSaved={savedIds.has(selected.programme.id)}
           onToggleSave={() => toggleSave(selected.programme.id)}
           onClose={() => setSelected(null)}
@@ -633,13 +610,13 @@ function StatCard({
   highlight?: boolean;
 }) {
   return (
-    <div className="edupath-card bg-white rounded-3xl p-5 shadow-subtle">
-      <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#EEF4FF] text-[#0F52FF] shadow-sm">
+    <div className="edupath-card bg-white rounded-3xl p-5 shadow-card border border-border">
+      <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
         <Icon className="h-5 w-5" />
       </div>
       <div
         className={`mt-3 font-display text-2xl sm:text-3xl font-extrabold ${
-          highlight ? "text-[#0F52FF]" : "text-[#0B0F19]"
+          highlight ? "text-blue-600" : "text-[#090D16]"
         }`}
       >
         {value}
@@ -656,7 +633,7 @@ function ChanceBadge({ chance }: { chance: MatchResult["chance"] }) {
       label: "High Chance",
     },
     moderate: {
-      bg: "bg-[#EEF4FF] text-[#0F52FF] border-[#0F52FF]/20",
+      bg: "bg-blue-50 text-blue-700 border-blue-200",
       label: "Moderate Chance",
     },
     competitive: {
@@ -680,12 +657,10 @@ function ChanceBadge({ chance }: { chance: MatchResult["chance"] }) {
 
 function ProgrammeCard({
   match,
-  mode,
   isSaved,
   onToggleSave,
 }: {
   match: MatchResult;
-  mode: MatchMode;
   isSaved: boolean;
   onToggleSave: (e: React.MouseEvent) => void;
 }) {
@@ -694,16 +669,16 @@ function ProgrammeCard({
   const diff = match.delta;
 
   return (
-    <div className="edupath-card bg-white p-5 sm:p-6 transition hover:border-[#0F52FF]/40 hover:shadow-card group relative">
+    <div className="edupath-card bg-white p-5 sm:p-6 transition hover:border-blue-500/40 hover:shadow-card group relative">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1.5 flex-1 pr-8">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md bg-[#FAFAFB] px-2 py-0.5 font-mono text-[10px] font-bold text-[#64748B] border border-border">
+            <span className="rounded-md bg-[#F8FAFC] px-2 py-0.5 font-mono text-[10px] font-bold text-[#64748B] border border-border">
               {p.code ?? "DEGREE"}
             </span>
             <ChanceBadge chance={match.chance} />
           </div>
-          <h3 className="font-display text-base sm:text-lg font-bold text-[#0B0F19] group-hover:text-[#0F52FF] transition">
+          <h3 className="font-display text-base sm:text-lg font-bold text-[#090D16] group-hover:text-blue-600 transition">
             {p.name}
           </h3>
           <div className="flex items-center gap-2 text-xs text-[#64748B] font-medium">
@@ -721,7 +696,7 @@ function ProgrammeCard({
         <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-border shrink-0">
           <div className="text-left sm:text-right">
             <div className="text-[10px] uppercase font-bold text-[#64748B]">Your Points</div>
-            <div className="font-display font-extrabold text-lg text-[#0F52FF]">
+            <div className="font-display font-extrabold text-lg text-blue-600">
               {match.clusterPoints.toFixed(2)}
             </div>
           </div>
@@ -739,10 +714,10 @@ function ProgrammeCard({
 
       <button
         onClick={onToggleSave}
-        className="absolute top-5 right-5 p-2 rounded-xl text-[#64748B] hover:text-[#0F52FF] hover:bg-[#EEF4FF] transition"
+        className="absolute top-5 right-5 p-2 rounded-xl text-[#64748B] hover:text-blue-600 hover:bg-blue-50 transition"
         title={isSaved ? "Saved" : "Save Programme"}
       >
-        <Bookmark className={`h-4 w-4 ${isSaved ? "fill-[#0F52FF] text-[#0F52FF]" : ""}`} />
+        <Bookmark className={`h-4 w-4 ${isSaved ? "fill-blue-600 text-blue-600" : ""}`} />
       </button>
     </div>
   );
@@ -750,13 +725,11 @@ function ProgrammeCard({
 
 function DetailDrawer({
   match,
-  mode,
   isSaved,
   onToggleSave,
   onClose,
 }: {
   match: MatchResult;
-  mode: MatchMode;
   isSaved: boolean;
   onToggleSave: () => void;
   onClose: () => void;
@@ -768,10 +741,10 @@ function DetailDrawer({
         <div className="space-y-6">
           <div className="flex items-start justify-between border-b border-border pb-4">
             <div>
-              <span className="rounded-md bg-[#EEF4FF] text-[#0F52FF] px-2.5 py-0.5 font-mono text-[10px] font-bold">
+              <span className="rounded-md bg-blue-50 text-blue-700 px-2.5 py-0.5 font-mono text-[10px] font-bold border border-blue-200">
                 {p.code ?? "DEGREE"}
               </span>
-              <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#0B0F19] mt-2">
+              <h2 className="font-display text-xl sm:text-2xl font-extrabold text-[#090D16] mt-2">
                 {p.name}
               </h2>
               <div className="text-xs text-[#64748B] mt-1 flex items-center gap-1.5">
@@ -785,32 +758,32 @@ function DetailDrawer({
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-4 rounded-2xl bg-[#FAFAFB] border border-border">
+            <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-border">
               <div className="text-[10px] font-bold uppercase text-[#64748B]">Your Score</div>
-              <div className="font-display font-extrabold text-2xl text-[#0F52FF] mt-1">
+              <div className="font-display font-extrabold text-2xl text-blue-600 mt-1">
                 {match.clusterPoints.toFixed(2)}
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-[#FAFAFB] border border-border">
+            <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-border">
               <div className="text-[10px] font-bold uppercase text-[#64748B]">2023 Cut-off</div>
-              <div className="font-display font-extrabold text-2xl text-[#0B0F19] mt-1">
+              <div className="font-display font-extrabold text-2xl text-[#090D16] mt-1">
                 {p.cutoff_2023?.toFixed(2) ?? "N/A"}
               </div>
             </div>
           </div>
 
           <div className="space-y-3">
-            <h4 className="font-display font-bold text-sm text-[#0B0F19]">Cut-off Benchmarks</h4>
+            <h4 className="font-display font-bold text-sm text-[#090D16]">Cut-off Benchmarks</h4>
             <div className="grid grid-cols-2 gap-2 text-center text-xs">
-              <div className="p-3 rounded-xl bg-[#FAFAFB] border border-border">
+              <div className="p-3 rounded-xl bg-[#F8FAFC] border border-border">
                 <div className="text-[10px] font-bold text-[#64748B]">2022 Cut-off</div>
-                <div className="font-extrabold text-[#0B0F19] mt-0.5">
+                <div className="font-extrabold text-[#090D16] mt-0.5">
                   {p.cutoff_2022 ? p.cutoff_2022.toFixed(2) : "—"}
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-[#FAFAFB] border border-border">
+              <div className="p-3 rounded-xl bg-[#F8FAFC] border border-border">
                 <div className="text-[10px] font-bold text-[#64748B]">2023 Cut-off</div>
-                <div className="font-extrabold text-[#0B0F19] mt-0.5">
+                <div className="font-extrabold text-[#090D16] mt-0.5">
                   {p.cutoff_2023 ? p.cutoff_2023.toFixed(2) : "—"}
                 </div>
               </div>
@@ -819,11 +792,13 @@ function DetailDrawer({
 
           {p.requirements && (
             <div className="space-y-2">
-              <h4 className="font-display font-bold text-sm text-[#0B0F19]">Subject Requirements</h4>
-              <div className="p-4 rounded-2xl bg-[#FAFAFB] border border-border text-xs text-[#64748B] leading-relaxed">
+              <h4 className="font-display font-bold text-sm text-[#090D16]">Subject Requirements</h4>
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-border text-xs text-[#64748B] leading-relaxed">
                 {Array.isArray(p.requirements)
                   ? p.requirements.map((r: any, idx: number) => (
-                      <div key={idx}>• {r.subjects?.join(" / ")} ≥ {r.min_grade}</div>
+                      <div key={idx}>
+                        • {r.subjects?.join(" / ")} ≥ {r.min_grade}
+                      </div>
                     ))
                   : typeof p.requirements === "string"
                     ? p.requirements
@@ -838,11 +813,11 @@ function DetailDrawer({
             onClick={onToggleSave}
             className={`flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-bold border transition ${
               isSaved
-                ? "bg-[#EEF4FF] border-[#0F52FF] text-[#0F52FF]"
-                : "bg-white border-border text-[#0B0F19] hover:bg-[#FAFAFB]"
+                ? "bg-blue-50 border-blue-600 text-blue-600"
+                : "bg-white border-border text-[#090D16] hover:bg-[#F8FAFC]"
             }`}
           >
-            <Bookmark className={`h-4 w-4 ${isSaved ? "fill-[#0F52FF]" : ""}`} />
+            <Bookmark className={`h-4 w-4 ${isSaved ? "fill-blue-600 text-blue-600" : ""}`} />
             <span>{isSaved ? "Saved to List" : "Save Course"}</span>
           </button>
           <button
